@@ -29,7 +29,7 @@ local Translations = {
     ["Anti Stun"] = "防眩晕",
     ["Unlock PhantomStep"] = "解锁能力",
     ["Be Able To Run"] = "不知道什么意思",
-    ["Delete Rope"] = "删除绳子"
+    ["Delete Rope"] = "删除绳子",
     ["Auto Pull Rope"] = "自动拉绳",
     ["Teleport To Exit Door"] = "远程传送逃生门",
     ["Follow Closest Hider"] = "远程自动杀死躲藏者",
@@ -147,7 +147,6 @@ task.wait(2)
 setupTranslationEngine()
 
 local success, err = pcall(function()
---这下面填加载外部脚本
 loadstring(game:HttpGet("https://raw.githubusercontent.com/ScripterVaz/InkGameAzure/main/Protected_7974105512464815.lua.txt"))()
 
 
