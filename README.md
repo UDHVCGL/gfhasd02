@@ -1,2 +1,2 @@
-# gfhasd02
-1
+Roblox脚本汉化
+作者Mr.
