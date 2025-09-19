@@ -1,6 +1,6 @@
 -- MR脚本 UI界面
--- 版本：2.1
--- 描述：可扩展的脚本管理器，支持无限添加脚本，单独的信息按钮
+-- 版本：2.2
+-- 描述：可扩展的脚本管理器，支持无限添加脚本，可移动的信息框
 
 local Player = game:GetService("Players").LocalPlayer
 local UserInputService = game:GetService("UserInputService")
@@ -103,7 +103,7 @@ ContentFrame.Parent = MainContainer
 -- 滚动框架
 local ScrollFrame = Instance.new("ScrollingFrame")
 ScrollFrame.Name = "ScrollFrame"
-ScrollFrame.Size = UDim2.new(1, 0, 1, -65) -- 为信息框留出空间
+ScrollFrame.Size = UDim2.new(1, 0, 1, 0)
 ScrollFrame.Position = UDim2.new(0, 0, 0, 0)
 ScrollFrame.BackgroundTransparency = 1
 ScrollFrame.BorderSizePixel = 0
@@ -120,35 +120,46 @@ UIListLayout.Padding = UDim.new(0, 5)
 UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 UIListLayout.Parent = ScrollFrame
 
--- 脚本信息显示框
+-- 脚本信息显示框（独立可移动）
 local InfoFrame = Instance.new("Frame")
 InfoFrame.Name = "InfoFrame"
-InfoFrame.Size = UDim2.new(1, 0, 0, 60)
-InfoFrame.Position = UDim2.new(0, 0, 1, -60)
-InfoFrame.AnchorPoint = Vector2.new(0, 1)
+InfoFrame.Size = UDim2.new(0, 180, 0, 100)
+InfoFrame.Position = UDim2.new(0, 220, 0, 30) -- 默认显示在主UI右侧
 InfoFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 InfoFrame.BackgroundTransparency = 0.5
 InfoFrame.BorderSizePixel = 0
 InfoFrame.Visible = false
-InfoFrame.Parent = ContentFrame
+InfoFrame.Active = true
+InfoFrame.Draggable = true
+InfoFrame.Parent = MRGui
 
-local ScriptInfo = Instance.new("TextLabel")
-ScriptInfo.Name = "ScriptInfo"
-ScriptInfo.Size = UDim2.new(1, -10, 1, -10)
-ScriptInfo.Position = UDim2.new(0, 5, 0, 5)
-ScriptInfo.BackgroundTransparency = 1
-ScriptInfo.Text = "MR脚本中心 测试版v1\n禁倒卖,倒卖全死\n点击脚本按钮加载功能\nMR制作｜完全免费｜作者Q：425695367"
-ScriptInfo.TextColor3 = Color3.fromRGB(220, 220, 220)
-ScriptInfo.Font = Enum.Font.SourceSans
-ScriptInfo.TextSize = 12
-ScriptInfo.TextWrapped = true
-ScriptInfo.Parent = InfoFrame
+-- 信息框标题栏
+local InfoTitleBar = Instance.new("Frame")
+InfoTitleBar.Name = "InfoTitleBar"
+InfoTitleBar.Size = UDim2.new(1, 0, 0, 20)
+InfoTitleBar.Position = UDim2.new(0, 0, 0, 0)
+InfoTitleBar.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+InfoTitleBar.BackgroundTransparency = 0.3
+InfoTitleBar.BorderSizePixel = 0
+InfoTitleBar.Parent = InfoFrame
+
+local InfoTitle = Instance.new("TextLabel")
+InfoTitle.Name = "InfoTitle"
+InfoTitle.Size = UDim2.new(1, -20, 1, 0)
+InfoTitle.Position = UDim2.new(0, 5, 0, 0)
+InfoTitle.BackgroundTransparency = 1
+InfoTitle.Text = "脚本信息"
+InfoTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+InfoTitle.TextXAlignment = Enum.TextXAlignment.Left
+InfoTitle.Font = Enum.Font.SourceSansBold
+InfoTitle.TextSize = 12
+InfoTitle.Parent = InfoTitleBar
 
 -- 关闭信息按钮
 local CloseInfoButton = Instance.new("TextButton")
 CloseInfoButton.Name = "CloseInfoButton"
 CloseInfoButton.Size = UDim2.new(0, 20, 0, 20)
-CloseInfoButton.Position = UDim2.new(1, -25, 0, 5)
+CloseInfoButton.Position = UDim2.new(1, -20, 0, 0)
 CloseInfoButton.BackgroundColor3 = Color3.fromRGB(150, 50, 50)
 CloseInfoButton.BackgroundTransparency = 0.3
 CloseInfoButton.BorderSizePixel = 0
@@ -156,14 +167,30 @@ CloseInfoButton.Text = "X"
 CloseInfoButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 CloseInfoButton.Font = Enum.Font.SourceSansBold
 CloseInfoButton.TextSize = 12
-CloseInfoButton.Visible = false
-CloseInfoButton.Parent = InfoFrame
+CloseInfoButton.Parent = InfoTitleBar
+
+-- 信息内容
+local ScriptInfo = Instance.new("TextLabel")
+ScriptInfo.Name = "ScriptInfo"
+ScriptInfo.Size = UDim2.new(1, -10, 1, -30)
+ScriptInfo.Position = UDim2.new(0, 5, 0, 25)
+ScriptInfo.BackgroundTransparency = 1
+ScriptInfo.Text = "MR脚本中心 測試v1\n• 禁倒卖，倒卖全死\n• 点击脚本按钮加载功能\n• 作者QQ：425695367\n• MR制作｜完全免费脚本"
+ScriptInfo.TextColor3 = Color3.fromRGB(220, 220, 220)
+ScriptInfo.Font = Enum.Font.SourceSans
+ScriptInfo.TextSize = 12
+ScriptInfo.TextWrapped = true
+ScriptInfo.TextXAlignment = Enum.TextXAlignment.Left
+ScriptInfo.TextYAlignment = Enum.TextYAlignment.Top
+ScriptInfo.Parent = InfoFrame
 
 -- UI状态变量
 local IsExpanded = false
 local IsInfoVisible = false
 local IsDragging = false
+local IsInfoDragging = false
 local DragStartPos
+local InfoDragStartPos
 
 -- 脚本数据表
 local Scripts = {
@@ -192,7 +219,7 @@ local Scripts = {
         Name = "通用飞行",
         Color = Color3.fromRGB(60, 100, 150),
         LoadFunction = function()
-            loadstring("\108\111\97\100\115\116\114\105\110\103\40\103\97\109\101\58\72\116\116\112\71\101\116\40\34\104\116\116\112\115\58\47\47\112\97\115\116\101\98\105\110\46\99\111\109\47\114\97\119\47\90\66\122\99\84\109\49\102\34\41\41\40\41\10")()
+            loadstring("\108\111\97\100\115\116\114\105\110\103\40\103\97\109\101\58\72\116\116\116\112\71\101\116\40\34\104\116\116\112\115\58\47\47\112\97\115\116\101\98\105\110\46\99\111\109\47\114\97\119\47\90\66\122\99\84\109\49\102\34\41\41\40\41\10")()
         end
     }
     -- 在这里添加更多脚本...
@@ -245,14 +272,12 @@ end
 local function ToggleInfo()
     IsInfoVisible = not IsInfoVisible
     InfoFrame.Visible = IsInfoVisible
-    CloseInfoButton.Visible = IsInfoVisible
     
     if IsInfoVisible then
-        -- 隐藏滚动条以便更好地查看信息
-        ScrollFrame.ScrollBarThickness = 0
-    else
-        -- 恢复滚动条
-        ScrollFrame.ScrollBarThickness = 6
+        -- 将信息框显示在主UI右侧
+        local mainPos = MainContainer.AbsolutePosition
+        local mainSize = MainContainer.AbsoluteSize
+        InfoFrame.Position = UDim2.new(0, mainPos.X + mainSize.X + 10, 0, mainPos.Y)
     end
 end
 
@@ -262,7 +287,7 @@ local function ToggleUI()
     
     if IsExpanded then
         ToggleButton.Text = "-"
-        local contentHeight = math.min(#Scripts * 35 + (#Scripts) * 5 + 75, 300) -- 最大高度300
+        local contentHeight = math.min(#Scripts * 35 + (#Scripts) * 5 + 10, 250) -- 最大高度250
         MainContainer.Size = UDim2.new(0, 200, 0, contentHeight + 40)
         ContentFrame.Size = UDim2.new(1, 0, 0, contentHeight)
         ScrollFrame.Visible = true
@@ -273,20 +298,11 @@ local function ToggleUI()
                 child.Visible = true
             end
         end
-        
-        -- 如果信息正在显示，保持显示状态
-        if IsInfoVisible then
-            InfoFrame.Visible = true
-            CloseInfoButton.Visible = true
-        end
     else
         ToggleButton.Text = "+"
         MainContainer.Size = UDim2.new(0, 100, 0, 40)
         ContentFrame.Size = UDim2.new(1, 0, 0, 0)
         ScrollFrame.Visible = false
-        InfoFrame.Visible = false
-        CloseInfoButton.Visible = false
-        IsInfoVisible = false
     end
 end
 
@@ -296,7 +312,7 @@ local function CloseUI()
     print("MR脚本UI已关闭")
 end
 
--- 处理拖动
+-- 处理主UI拖动
 TitleBar.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
         IsDragging = true
@@ -312,11 +328,33 @@ TitleBar.InputEnded:Connect(function(input)
     end
 end)
 
+-- 处理信息框拖动
+InfoTitleBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        IsInfoDragging = true
+        InfoDragStartPos = Vector2.new(input.Position.X, input.Position.Y)
+        InfoFrame.Draggable = false
+    end
+end)
+
+InfoTitleBar.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        IsInfoDragging = false
+        InfoFrame.Draggable = true
+    end
+end)
+
 UserInputService.InputChanged:Connect(function(input)
     if IsDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
         local delta = Vector2.new(input.Position.X, input.Position.Y) - DragStartPos
         MainContainer.Position = UDim2.new(0, MainContainer.Position.X.Offset + delta.X, 0, MainContainer.Position.Y.Offset + delta.Y)
         DragStartPos = Vector2.new(input.Position.X, input.Position.Y)
+    end
+    
+    if IsInfoDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = Vector2.new(input.Position.X, input.Position.Y) - InfoDragStartPos
+        InfoFrame.Position = UDim2.new(0, InfoFrame.Position.X.Offset + delta.X, 0, InfoFrame.Position.Y.Offset + delta.Y)
+        InfoDragStartPos = Vector2.new(input.Position.X, input.Position.Y)
     end
 end)
 
@@ -327,8 +365,6 @@ InfoButton.MouseButton1Click:Connect(ToggleInfo)
 CloseInfoButton.MouseButton1Click:Connect(function()
     IsInfoVisible = false
     InfoFrame.Visible = false
-    CloseInfoButton.Visible = false
-    ScrollFrame.ScrollBarThickness = 6
 end)
 
 -- 初始化
@@ -341,9 +377,9 @@ UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 end)
 
 -- 初始化UI
-print("MR脚本UI v2.1 已加载！")
+print("MR脚本UI v2.2 已加载！")
 print("支持无限添加脚本")
 print("点击标题栏右侧的+按钮展开UI")
-print("点击i按钮查看脚本信息")
-print("长按标题栏可以拖动UI")
+print("点击i按钮查看可移动的脚本信息")
+print("长按标题栏可以拖动UI和信息框")
 print("点击X按钮可以关闭UI")
