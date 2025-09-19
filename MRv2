@@ -1,0 +1,507 @@
+-- MR脚本 UI界面
+-- 版本：2.3
+-- 描述：可扩展的脚本管理器，支持无限添加脚本，可滚动的信息框
+
+local Player = game:GetService("Players").LocalPlayer
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local CoreGui = game:GetService("CoreGui")
+
+-- 创建主UI
+local MRGui = Instance.new("ScreenGui")
+MRGui.Name = "MRGui"
+MRGui.Parent = CoreGui
+MRGui.ResetOnSpawn = false
+
+-- 主容器（最小化状态）
+local MainContainer = Instance.new("Frame")
+MainContainer.Name = "MainContainer"
+MainContainer.Size = UDim2.new(0, 100, 0, 40)
+MainContainer.Position = UDim2.new(0, 10, 0, 10)
+MainContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MainContainer.BackgroundTransparency = 0.3
+MainContainer.BorderSizePixel = 0
+MainContainer.Active = true
+MainContainer.Draggable = true
+MainContainer.Parent = MRGui
+
+-- 标题栏
+local TitleBar = Instance.new("Frame")
+TitleBar.Name = "TitleBar"
+TitleBar.Size = UDim2.new(1, 0, 0, 20)
+TitleBar.Position = UDim2.new(0, 0, 0, 0)
+TitleBar.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+TitleBar.BackgroundTransparency = 0.2
+TitleBar.BorderSizePixel = 0
+TitleBar.Parent = MainContainer
+
+local Title = Instance.new("TextLabel")
+Title.Name = "Title"
+Title.Size = UDim2.new(1, -75, 1, 0)
+Title.Position = UDim2.new(0, 5, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "MR脚本"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Font = Enum.Font.SourceSansBold
+Title.TextSize = 14
+Title.Parent = TitleBar
+
+-- 信息按钮
+local InfoButton = Instance.new("TextButton")
+InfoButton.Name = "InfoButton"
+InfoButton.Size = UDim2.new(0, 20, 0, 20)
+InfoButton.Position = UDim2.new(1, -70, 0, 0)
+InfoButton.BackgroundColor3 = Color3.fromRGB(50, 100, 150)
+InfoButton.BackgroundTransparency = 0.3
+InfoButton.BorderSizePixel = 0
+InfoButton.Text = "i"
+InfoButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+InfoButton.Font = Enum.Font.SourceSansBold
+InfoButton.TextSize = 14
+InfoButton.Parent = TitleBar
+
+-- 展开/折叠按钮
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Name = "ToggleButton"
+ToggleButton.Size = UDim2.new(0, 20, 0, 20)
+ToggleButton.Position = UDim2.new(1, -45, 0, 0)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+ToggleButton.BackgroundTransparency = 0.3
+ToggleButton.BorderSizePixel = 0
+ToggleButton.Text = "+"
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.Font = Enum.Font.SourceSansBold
+ToggleButton.TextSize = 14
+ToggleButton.Parent = TitleBar
+
+-- 关闭按钮
+local CloseButton = Instance.new("TextButton")
+CloseButton.Name = "CloseButton"
+CloseButton.Size = UDim2.new(0, 20, 0, 20)
+CloseButton.Position = UDim2.new(1, -20, 0, 0)
+CloseButton.BackgroundColor3 = Color3.fromRGB(150, 50, 50)
+CloseButton.BackgroundTransparency = 0.3
+CloseButton.BorderSizePixel = 0
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.Font = Enum.Font.SourceSansBold
+CloseButton.TextSize = 14
+CloseButton.Parent = TitleBar
+
+-- 内容区域（初始隐藏）
+local ContentFrame = Instance.new("Frame")
+ContentFrame.Name = "ContentFrame"
+ContentFrame.Size = UDim2.new(1, 0, 0, 0)
+ContentFrame.Position = UDim2.new(0, 0, 0, 20)
+ContentFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+ContentFrame.BackgroundTransparency = 0.3
+ContentFrame.BorderSizePixel = 0
+ContentFrame.ClipsDescendants = true
+ContentFrame.Parent = MainContainer
+
+-- 滚动框架
+local ScrollFrame = Instance.new("ScrollingFrame")
+ScrollFrame.Name = "ScrollFrame"
+ScrollFrame.Size = UDim2.new(1, 0, 1, 0)
+ScrollFrame.Position = UDim2.new(0, 0, 0, 0)
+ScrollFrame.BackgroundTransparency = 1
+ScrollFrame.BorderSizePixel = 0
+ScrollFrame.ScrollBarThickness = 6
+ScrollFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
+ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+ScrollFrame.Visible = false
+ScrollFrame.Parent = ContentFrame
+
+-- UI布局
+local UIListLayout = Instance.new("UIListLayout")
+UIListLayout.Name = "UIListLayout"
+UIListLayout.Padding = UDim.new(0, 5)
+UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+UIListLayout.Parent = ScrollFrame
+
+-- 脚本信息显示框（独立可移动，带滚动）
+local InfoFrame = Instance.new("Frame")
+InfoFrame.Name = "InfoFrame"
+InfoFrame.Size = UDim2.new(0, 250, 0, 300) -- 更大的信息框
+InfoFrame.Position = UDim2.new(0, 220, 0, 30)
+InfoFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+InfoFrame.BackgroundTransparency = 0.5
+InfoFrame.BorderSizePixel = 0
+InfoFrame.Visible = false
+InfoFrame.Active = true
+InfoFrame.Draggable = true
+InfoFrame.Parent = MRGui
+
+-- 信息框标题栏
+local InfoTitleBar = Instance.new("Frame")
+InfoTitleBar.Name = "InfoTitleBar"
+InfoTitleBar.Size = UDim2.new(1, 0, 0, 20)
+InfoTitleBar.Position = UDim2.new(0, 0, 0, 0)
+InfoTitleBar.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+InfoTitleBar.BackgroundTransparency = 0.3
+InfoTitleBar.BorderSizePixel = 0
+InfoTitleBar.Parent = InfoFrame
+
+local InfoTitle = Instance.new("TextLabel")
+InfoTitle.Name = "InfoTitle"
+InfoTitle.Size = UDim2.new(1, -20, 1, 0)
+InfoTitle.Position = UDim2.new(0, 5, 0, 0)
+InfoTitle.BackgroundTransparency = 1
+InfoTitle.Text = "脚本信息 - v2.3"
+InfoTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+InfoTitle.TextXAlignment = Enum.TextXAlignment.Left
+InfoTitle.Font = Enum.Font.SourceSansBold
+InfoTitle.TextSize = 12
+InfoTitle.Parent = InfoTitleBar
+
+-- 关闭信息按钮
+local CloseInfoButton = Instance.new("TextButton")
+CloseInfoButton.Name = "CloseInfoButton"
+CloseInfoButton.Size = UDim2.new(0, 20, 0, 20)
+CloseInfoButton.Position = UDim2.new(1, -20, 0, 0)
+CloseInfoButton.BackgroundColor3 = Color3.fromRGB(150, 50, 50)
+CloseInfoButton.BackgroundTransparency = 0.3
+CloseInfoButton.BorderSizePixel = 0
+CloseInfoButton.Text = "X"
+CloseInfoButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseInfoButton.Font = Enum.Font.SourceSansBold
+CloseInfoButton.TextSize = 12
+CloseInfoButton.Parent = InfoTitleBar
+
+-- 信息内容滚动框架
+local InfoScrollFrame = Instance.new("ScrollingFrame")
+InfoScrollFrame.Name = "InfoScrollFrame"
+InfoScrollFrame.Size = UDim2.new(1, -10, 1, -30)
+InfoScrollFrame.Position = UDim2.new(0, 5, 0, 25)
+InfoScrollFrame.BackgroundTransparency = 1
+InfoScrollFrame.BorderSizePixel = 0
+InfoScrollFrame.ScrollBarThickness = 6
+InfoScrollFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
+InfoScrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+InfoScrollFrame.Parent = InfoFrame
+
+-- 信息内容布局
+local InfoListLayout = Instance.new("UIListLayout")
+InfoListLayout.Name = "InfoListLayout"
+InfoListLayout.Padding = UDim.new(0, 5)
+InfoListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+InfoListLayout.Parent = InfoScrollFrame
+
+-- UI状态变量
+local IsExpanded = false
+local IsInfoVisible = false
+local IsDragging = false
+local IsInfoDragging = false
+local DragStartPos
+local InfoDragStartPos
+
+-- 脚本数据表
+local Scripts = {
+    {
+        Name = "鲨鱼咬2",
+        Color = Color3.fromRGB(60, 120, 60),
+        LoadFunction = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/SharkBite2汉化.lua"))()
+        end
+    },
+    {
+        Name = "超速射击",
+        Color = Color3.fromRGB(120, 60, 60),
+        LoadFunction = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/Hypershot汉化.lua"))()
+        end
+    },
+    {
+        Name = "墨水游戏",
+        Color = Color3.fromRGB(80, 60, 120),
+        LoadFunction = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/墨水汉化.lua"))()
+        end
+    },
+    {
+        Name = "通用飞行",
+        Color = Color3.fromRGB(60, 100, 150),
+        LoadFunction = function()
+            loadstring("\108\111\97\100\115\116\114\105\110\103\40\103\97\109\101\58\72\116\116\112\71\101\116\40\34\104\116\116\112\115\58\47\47\112\97\115\116\101\98\105\110\46\99\111\109\47\114\97\119\47\90\66\122\99\84\109\49\102\34\41\41\40\41\10")()
+        end
+    },
+    {
+        Name = "測試",
+        Color = Color3.fromRGB(60, 100, 150),
+        LoadFunction = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/SharkBite2汉化.lua"))()
+        end
+    }
+    -- 在这里添加更多脚本...
+}
+
+-- 信息内容数据（可以无限添加）
+local InfoContents = {
+    "🎯 MR脚本中心 测试v2",
+    "✨ 脚本特点：",
+    "• 高质量脚本",
+    "• 完全免费",
+    "• 不定时更新",
+    "• 简单的脚本显示",
+    "",
+    "🛠️ 使用方法：",
+    "• 点击脚本按钮加载功能",
+    "• 点击i按钮查看详细信息",
+    "• 拖动标题栏移动界面",
+    "• 信息框支持滚动浏览",
+    "",
+    "📋 当前脚本列表：",
+    "• 鲨鱼咬2",
+    "• 超速射击",
+    "• 墨水游戏", 
+    "• 通用飞行",
+    "",
+    "🔧 其他：",
+    "• 作者MR",
+    "• 个人开发",
+    "• 禁止倒卖",
+    "• 快速响应",
+    "",
+    "📞 支持信息：",
+    "• 开发者：MR",
+    "• 版本：v2",
+    "• 更新日期：2025年",
+    "• 完全免费脚本",
+    "",
+    "⚠️ 注意事项：",
+    "• 请在允许的环境中使用",
+    "• 遵守游戏规则",
+    "• 不定期更新脚本",
+    "",
+    "🎮 兼容游戏：",
+    "• 鲨鱼咬2 (SharkBite 2)",
+    "• 超速射击 (Hyper Shot)",
+    "• 墨水游戏 (Ink Game)",
+    "• 及其他Roblox游戏",
+    "",
+    "🚀 未来计划：",
+    "• 添加更多游戏脚本",
+    "• 优化用户界面",
+    "• 不知道",
+    "• 不知道",
+    "",
+    "💡 使用技巧：",
+    "• 可以拖动信息框到合适位置",
+    "• 使用滚轮浏览长内容",
+    "• 点击脚本按钮后等待加载完成",
+    "• 关闭不使用的界面节省空间",
+    "",
+    "🌟 特别感谢：",
+    "• 所有测试用户",
+    "• 社区贡献者",
+    "• 开发者团队"
+}
+
+-- 创建脚本按钮
+local function CreateScriptButtons()
+    for i, scriptData in ipairs(Scripts) do
+        local button = Instance.new("TextButton")
+        button.Name = scriptData.Name .. "Button"
+        button.Size = UDim2.new(1, -10, 0, 30)
+        button.Position = UDim2.new(0, 5, 0, (i-1)*35 + 5)
+        button.BackgroundColor3 = scriptData.Color
+        button.BackgroundTransparency = 0.3
+        button.BorderSizePixel = 0
+        button.Text = scriptData.Name
+        button.TextColor3 = Color3.fromRGB(255, 255, 255)
+        button.Font = Enum.Font.SourceSansBold
+        button.TextSize = 14
+        button.LayoutOrder = i
+        button.Visible = false
+        
+        button.MouseButton1Click:Connect(function()
+            -- 显示加载提示
+            local oldText = button.Text
+            button.Text = "加载中..."
+            
+            -- 执行脚本加载函数
+            pcall(scriptData.LoadFunction)
+            
+            -- 2秒后恢复原文本
+            delay(2, function()
+                if button then
+                    button.Text = oldText
+                end
+            end)
+        end)
+        
+        button.Parent = ScrollFrame
+    end
+end
+
+-- 创建信息内容
+local function CreateInfoContent()
+    for i, content in ipairs(InfoContents) do
+        local textLabel = Instance.new("TextLabel")
+        textLabel.Name = "InfoLine" .. i
+        textLabel.Size = UDim2.new(1, 0, 0, 20)
+        textLabel.BackgroundTransparency = 1
+        textLabel.Text = content
+        textLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
+        textLabel.Font = Enum.Font.SourceSans
+        textLabel.TextSize = 12
+        textLabel.TextXAlignment = Enum.TextXAlignment.Left
+        textLabel.TextWrapped = true
+        textLabel.LayoutOrder = i
+        textLabel.AutomaticSize = Enum.AutomaticSize.Y
+        
+        -- 根据内容类型设置样式
+        if content:find("🎯") or content:find("✨") or content:find("🛠️") or content:find("📋") or content:find("🔧") or content:find("📞") or content:find("⚠️") or content:find("🎮") or content:find("🚀") or content:find("💡") or content:find("🌟") then
+            textLabel.TextColor3 = Color3.fromRGB(255, 255, 150)
+            textLabel.Font = Enum.Font.SourceSansBold
+        elseif content:find("•") then
+            textLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+            textLabel.Position = UDim2.new(0, 10, 0, 0)
+        elseif content == "" then
+            textLabel.Size = UDim2.new(1, 0, 0, 10)
+            textLabel.Text = ""
+        end
+        
+        textLabel.Parent = InfoScrollFrame
+    end
+end
+
+-- 更新滚动框架大小
+local function UpdateScrollSize()
+    local totalHeight = #Scripts * 35 + (#Scripts - 1) * 5 + 10
+    ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
+end
+
+-- 更新信息滚动框架大小
+local function UpdateInfoScrollSize()
+    local totalHeight = 0
+    for _, child in ipairs(InfoScrollFrame:GetChildren()) do
+        if child:IsA("TextLabel") then
+            totalHeight = totalHeight + child.AbsoluteSize.Y + 5
+        end
+    end
+    InfoScrollFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
+end
+
+-- 切换信息显示
+local function ToggleInfo()
+    IsInfoVisible = not IsInfoVisible
+    InfoFrame.Visible = IsInfoVisible
+    
+    if IsInfoVisible then
+        -- 将信息框显示在主UI右侧
+        local mainPos = MainContainer.AbsolutePosition
+        local mainSize = MainContainer.AbsoluteSize
+        InfoFrame.Position = UDim2.new(0, mainPos.X + mainSize.X + 10, 0, mainPos.Y)
+    end
+end
+
+-- 展开/折叠UI
+local function ToggleUI()
+    IsExpanded = not IsExpanded
+    
+    if IsExpanded then
+        ToggleButton.Text = "-"
+        local contentHeight = math.min(#Scripts * 35 + (#Scripts) * 5 + 10, 250)
+        MainContainer.Size = UDim2.new(0, 200, 0, contentHeight + 40)
+        ContentFrame.Size = UDim2.new(1, 0, 0, contentHeight)
+        ScrollFrame.Visible = true
+        
+        -- 显示所有按钮
+        for _, child in ipairs(ScrollFrame:GetChildren()) do
+            if child:IsA("TextButton") then
+                child.Visible = true
+            end
+        end
+    else
+        ToggleButton.Text = "+"
+        MainContainer.Size = UDim2.new(0, 100, 0, 40)
+        ContentFrame.Size = UDim2.new(1, 0, 0, 0)
+        ScrollFrame.Visible = false
+    end
+end
+
+-- 关闭UI
+local function CloseUI()
+    MRGui:Destroy()
+    print("MR脚本UI已关闭")
+end
+
+-- 处理主UI拖动
+TitleBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        IsDragging = true
+        DragStartPos = Vector2.new(input.Position.X, input.Position.Y)
+        MainContainer.Draggable = false
+    end
+end)
+
+TitleBar.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        IsDragging = false
+        MainContainer.Draggable = true
+    end
+end)
+
+-- 处理信息框拖动
+InfoTitleBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        IsInfoDragging = true
+        InfoDragStartPos = Vector2.new(input.Position.X, input.Position.Y)
+        InfoFrame.Draggable = false
+    end
+end)
+
+InfoTitleBar.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        IsInfoDragging = false
+        InfoFrame.Draggable = true
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if IsDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = Vector2.new(input.Position.X, input.Position.Y) - DragStartPos
+        MainContainer.Position = UDim2.new(0, MainContainer.Position.X.Offset + delta.X, 0, MainContainer.Position.Y.Offset + delta.Y)
+        DragStartPos = Vector2.new(input.Position.X, input.Position.Y)
+    end
+    
+    if IsInfoDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = Vector2.new(input.Position.X, input.Position.Y) - InfoDragStartPos
+        InfoFrame.Position = UDim2.new(0, InfoFrame.Position.X.Offset + delta.X, 0, InfoFrame.Position.Y.Offset + delta.Y)
+        InfoDragStartPos = Vector2.new(input.Position.X, input.Position.Y)
+    end
+end)
+
+-- 按钮点击事件
+ToggleButton.MouseButton1Click:Connect(ToggleUI)
+CloseButton.MouseButton1Click:Connect(CloseUI)
+InfoButton.MouseButton1Click:Connect(ToggleInfo)
+CloseInfoButton.MouseButton1Click:Connect(function()
+    IsInfoVisible = false
+    InfoFrame.Visible = false
+end)
+
+-- 初始化
+CreateScriptButtons()
+CreateInfoContent()
+UpdateScrollSize()
+UpdateInfoScrollSize()
+
+-- 布局变化时更新滚动大小
+UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    UpdateScrollSize()
+end)
+
+InfoListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    UpdateInfoScrollSize()
+end)
+
+-- 初始化UI
+print("MR脚本UI v2.3 已加载！")
+print("支持无限添加脚本和无限信息内容")
+print("点击标题栏右侧的+按钮展开UI")
+print("点击i按钮查看可滚动信息")
+print("长按标题栏可以拖动UI和信息框")
+print("点击X按钮可以关闭UI")
