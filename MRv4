@@ -1,5 +1,5 @@
 -- MR脚本 UI界面
--- 版本：3.0
+-- 版本：1.0
 -- 描述：简洁版，保留核心功能
 
 local Player = game:GetService("Players").LocalPlayer
@@ -63,7 +63,7 @@ Title.Name = "Title"
 Title.Size = UDim2.new(0, 60, 1, 0)
 Title.Position = UDim2.new(0, 5, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "MR测试脚本"
+Title.Text = "MR中心v1"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Font = Enum.Font.SourceSansBold
@@ -203,7 +203,7 @@ SettingsTitle.Name = "SettingsTitle"
 SettingsTitle.Size = UDim2.new(1, -20, 1, 0)
 SettingsTitle.Position = UDim2.new(0, 5, 0, 0)
 SettingsTitle.BackgroundTransparency = 1
-SettingsTitle.Text = "设置 - v3.0"
+SettingsTitle.Text = "设置"
 SettingsTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
 SettingsTitle.TextXAlignment = Enum.TextXAlignment.Left
 SettingsTitle.Font = Enum.Font.SourceSansBold
@@ -328,7 +328,7 @@ InfoTitle.Name = "InfoTitle"
 InfoTitle.Size = UDim2.new(1, -20, 1, 0)
 InfoTitle.Position = UDim2.new(0, 5, 0, 0)
 InfoTitle.BackgroundTransparency = 1
-InfoTitle.Text = "脚本信息 - v3.0"
+InfoTitle.Text = "脚本信息-免费勿倒卖"
 InfoTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
 InfoTitle.TextXAlignment = Enum.TextXAlignment.Left
 InfoTitle.Font = Enum.Font.SourceSansBold
@@ -401,27 +401,26 @@ local Scripts = {
         end
     },
     {
-        Name = "通用飞行",
+        Name = "DOORS",
         Color = Color3.fromRGB(60, 100, 150),
         LoadFunction = function()
-            loadstring("\108\111\97\100\115\116\114\105\110\103\40\103\97\109\101\58\72\116\116\112\71\101\116\40\34\104\116\116\112\115\58\47\47\112\97\115\116\101\98\105\110\46\99\111\109\47\114\97\119\47\90\66\122\99\84\109\49\102\34\41\41\40\41\10")()
-        end
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/DOORS.lua"))()
     }
 }
 
 -- 信息内容数据
 local InfoContents = {
-    "🎯 MR脚本集合 v3.9999",
-    "✨ 核心功能：",
-    "• 脚本加载管理",
-    "• 主题颜色切换",
-    "• 可移动界面",
-    "• 简洁易用",
+    "🎯 MR脚本中心 正式版v1",
+    "✨ 更新公告：",
+    "• 更新服务器DOORS",
+    "• 不定期更新",
+    "• 后续更新:被遗弃，死铁轨，起床战争",
+    "• 更新时间:2025/9/20",
     "",
-    "🛠️ 使用方法：",
-    "• 点击脚本按钮加载功能",
-    "• 使用设置面板切换主题",
-    "• 拖动标题栏移动界面"
+    "🛠️ 重要信息：",
+    "• MR脚本创始人:MR",
+    "• 作者QQ:425695367",
+    "• 免费版本丨倒卖全死"
 }
 
 -- 应用UI设置
