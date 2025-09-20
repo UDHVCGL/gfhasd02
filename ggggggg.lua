@@ -20,7 +20,7 @@ local Camera = workspace.CurrentCamera
 --======================================================================================================================================================================================================================================--
 local V = "1.2"
 local Window = splib:MakeWindow({
- Name = "帝脚本 " .. V,
+ Name = "[MR破解]帝脚本 " .. V,
  HidePremium = false,
  SaveConfig = true,
  Setting = true,
@@ -30,7 +30,7 @@ local Window = splib:MakeWindow({
 })
 WatermarkLib:Create({
     Hotkey = Enum.KeyCode.Home,
-    CustomText = "帝脚本 V1.2 | By:小北,Q3E4 | {FPS} FPS"
+    CustomText = "MR破解：帝脚本 V1.2 | By:MR团队 | {FPS} FPS"
 })
 
 Tab = Window:MakeTab({
@@ -49,7 +49,7 @@ Tab:AddLabel("您当前的服务器ID: "..game.PlaceId)
 Tab:AddSection({
   Name = "======================================================================"  
 })
-Tab:AddLabel("脚本由: 小北 Q3E4 制作")
+Tab:AddLabel("脚本破解由: MR完成")
 ATab = Window:MakeTab({
   IsMobile = true,
   Name = "玩家传送",
@@ -177,7 +177,7 @@ BTab:AddButton({
         mouse = game.Players.LocalPlayer:GetMouse() 
         tool = Instance.new("Tool") 
         tool.RequiresHandle = false 
-        tool.Name = "小北、小凌NB" 
+        tool.Name = "MR团队NB" 
         tool.Activated:connect(function() 
             local pos = mouse.Hit+Vector3.new(0,2.5,0) 
             pos = CFrame.new(pos.X,pos.Y,pos.Z) 
