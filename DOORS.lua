@@ -1,6 +1,6 @@
 local Translations = {
 ["Noclip"] = "穿墙",
-    ["Loading mshax for DOORS"] = "Mr.汉化｜倒卖4全家｜425695367",
+    ["Loading mshax for DOORS"] = "MR汉化｜倒卖4全家｜425695367",
     ["Settings"] = "设置",
     ["Esp"] = "透视",
     ["Door"] = "门",
