@@ -1,0 +1,33 @@
+local chunkUrls = {
+    "https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/MRUnlock01.lua"
+}
+
+local function loadScriptFromGitHub()
+    local fullScript = ""
+    
+    for i, url in ipairs(chunkUrls) do
+        local success, chunk = pcall(function()
+            return game:HttpGet(url, true)
+        end)
+        
+        if success then
+            fullScript = fullScript .. chunk
+            print("成功加载区块", i)
+        else
+            warn("加载区块", i, "失败:", chunk)
+        end
+        wait(0.5) -- 避免请求过快
+    end
+    
+    local success, err = pcall(function()
+        return loadstring(fullScript)()
+    end)
+    
+    if not success then
+        warn("脚本执行错误:", err)
+    else
+        print("MR脚本UI加载完成！")
+    end
+end
+
+loadScriptFromGitHub()
