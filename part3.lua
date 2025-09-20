@@ -41,7 +41,7 @@ local Scripts = {
 
 -- 信息内容数据
 local InfoContents = {
-    "🎯 MR脚本中心 正式版v1",
+    "🎯 MR脚本中心 正式版v1.0",
     "✨ 更新公告：",
     "• 更新服务器DOORS",
     "• 不定期更新",
