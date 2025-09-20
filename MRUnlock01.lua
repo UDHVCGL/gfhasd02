@@ -20,7 +20,7 @@ local Camera = workspace.CurrentCamera
 --======================================================================================================================================================================================================================================--
 local V = "1.2"
 local Window = splib:MakeWindow({
- Name = "[MR破解]帝脚本 " .. V,
+ Name = "[MR]帝脚本 " .. V,
  HidePremium = false,
  SaveConfig = true,
  Setting = true,
@@ -30,7 +30,7 @@ local Window = splib:MakeWindow({
 })
 WatermarkLib:Create({
     Hotkey = Enum.KeyCode.Home,
-    CustomText = "MR破解：帝脚本 V1.2 | By:MR团队 | {FPS} FPS"
+    CustomText = "[MR]帝脚本 V1.2 | By:MR | {FPS} FPS"
 })
 
 Tab = Window:MakeTab({
@@ -49,7 +49,7 @@ Tab:AddLabel("您当前的服务器ID: "..game.PlaceId)
 Tab:AddSection({
   Name = "======================================================================"  
 })
-Tab:AddLabel("脚本破解由: MR完成")
+Tab:AddLabel("源码启动: MR完成")
 ATab = Window:MakeTab({
   IsMobile = true,
   Name = "玩家传送",
@@ -2969,7 +2969,7 @@ CTab:AddButton({
 
 CTab:AddButton({
     Name = "被遗弃‪ᯅ̈",
-    Desc = "Q3E4制作",
+    Desc = "神秘人制作",
     Callback = function()
             loadstring(game:HttpGet("https://raw.github.com/OAO-Kamu/I/main/Forsaken-CHANGED.Luau"))()
     end
@@ -2998,7 +2998,7 @@ ETab = Window:MakeTab({
 
 ETab:AddButton({
     Name = "吃掉世界",
-    Desc = "小北制作",
+    Desc = "神秘人制作",
     Callback = function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/BJX553/BJX/refs/heads/main/%E5%90%83%E6%8E%89%E4%B8%96%E7%95%8C.lua"))()
     end
@@ -3040,8 +3040,8 @@ GTab = Window:MakeTab({
 })
 
 GTab:AddButton({
-    Name = "俄亥俄州~小北",
-    Desc = "持续更新⸝⸝ ᷇࿀ ᷆⸝⸝",
+    Name = "俄亥俄州",
+    Desc = "神秘人⸝⸝ ᷇࿀ ᷆⸝⸝",
     Callback = function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/zilinskaslandon/-/refs/heads/main/xk%E4%BF%84%E4%BA%A5%E4%BF%84%E5%B7%9E.lua"))()
     end
@@ -3083,7 +3083,7 @@ JTab = Window:MakeTab({
 
 JTab:AddButton({
     Name = "伐木脚本",
-    Desc = "小北伐木",
+    Desc = "神秘人伐木",
     Callback = function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/zilinskaslandon/-/refs/heads/main/%E4%BC%90%E6%9C%A8%E8%84%9A%E6%9C%AC.Lua"))()
     end
