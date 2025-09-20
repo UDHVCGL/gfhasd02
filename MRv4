@@ -1,153 +1,151 @@
 -- MR脚本 UI界面
--- 版本：3.0
--- 描述：酷炫现代化的脚本管理器
+-- 版本：2.4
+-- 描述：可扩展的脚本管理器，带设置功能（透明度、颜色主题）
 
 local Player = game:GetService("Players").LocalPlayer
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local CoreGui = game:GetService("CoreGui")
-local RunService = game:GetService("RunService")
 
 -- 创建主UI
 local MRGui = Instance.new("ScreenGui")
 MRGui.Name = "MRGui"
 MRGui.Parent = CoreGui
 MRGui.ResetOnSpawn = false
-MRGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- 主容器（带炫酷效果）
+-- UI设置数据
+local UISettings = {
+    Transparency = 0.3, -- 默认透明度
+    Theme = "default",  -- 默认主题
+    Themes = {
+        default = {
+            MainColor = Color3.fromRGB(30, 30, 30),
+            TitleColor = Color3.fromRGB(20, 20, 20),
+            ContentColor = Color3.fromRGB(40, 40, 40)
+        },
+        white = {
+            MainColor = Color3.fromRGB(240, 240, 240),
+            TitleColor = Color3.fromRGB(220, 220, 220),
+            ContentColor = Color3.fromRGB(250, 250, 250)
+        },
+        black = {
+            MainColor = Color3.fromRGB(10, 10, 10),
+            TitleColor = Color3.fromRGB(0, 0, 0),
+            ContentColor = Color3.fromRGB(20, 20, 20)
+        }
+    }
+}
+
+-- 主容器（最小化状态）
 local MainContainer = Instance.new("Frame")
 MainContainer.Name = "MainContainer"
 MainContainer.Size = UDim2.new(0, 100, 0, 40)
 MainContainer.Position = UDim2.new(0, 10, 0, 10)
-MainContainer.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
-MainContainer.BackgroundTransparency = 0.1
+MainContainer.BackgroundColor3 = UISettings.Themes.default.MainColor
+MainContainer.BackgroundTransparency = UISettings.Transparency
 MainContainer.BorderSizePixel = 0
 MainContainer.Active = true
 MainContainer.Draggable = true
 MainContainer.Parent = MRGui
 
--- 添加边框光效
-local BorderGlow = Instance.new("UIStroke")
-BorderGlow.Name = "BorderGlow"
-BorderGlow.Color = Color3.fromRGB(0, 150, 255)
-BorderGlow.Thickness = 2
-BorderGlow.Transparency = 0.8
-BorderGlow.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-BorderGlow.Parent = MainContainer
-
--- 标题栏（渐变效果）
+-- 标题栏
 local TitleBar = Instance.new("Frame")
 TitleBar.Name = "TitleBar"
-TitleBar.Size = UDim2.new(1, 0, 0, 25)
+TitleBar.Size = UDim2.new(1, 0, 0, 20)
 TitleBar.Position = UDim2.new(0, 0, 0, 0)
-TitleBar.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
-TitleBar.BackgroundTransparency = 0.1
+TitleBar.BackgroundColor3 = UISettings.Themes.default.TitleColor
+TitleBar.BackgroundTransparency = UISettings.Transparency
 TitleBar.BorderSizePixel = 0
 TitleBar.Parent = MainContainer
 
-local TitleGradient = Instance.new("UIGradient")
-TitleGradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 100, 200)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(80, 150, 255))
-}
-TitleGradient.Rotation = 90
-TitleGradient.Parent = TitleBar
-
 local Title = Instance.new("TextLabel")
 Title.Name = "Title"
-Title.Size = UDim2.new(1, -80, 1, 0)
-Title.Position = UDim2.new(0, 10, 0, 0)
+Title.Size = UDim2.new(1, -95, 1, 0)
+Title.Position = UDim2.new(0, 5, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "⚡ MR脚本"
+Title.Text = "MR中心"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.TextXAlignment = Enum.TextXAlignment.Left
-Title.Font = Enum.Font.GothamBold
+Title.Font = Enum.Font.SourceSansBold
 Title.TextSize = 14
-Title.TextStrokeTransparency = 0.8
 Title.Parent = TitleBar
 
--- 信息按钮（炫酷蓝色）
+-- 设置按钮
+local SettingsButton = Instance.new("TextButton")
+SettingsButton.Name = "SettingsButton"
+SettingsButton.Size = UDim2.new(0, 20, 0, 20)
+SettingsButton.Position = UDim2.new(1, -95, 0, 0)
+SettingsButton.BackgroundColor3 = Color3.fromRGB(80, 80, 180)
+SettingsButton.BackgroundTransparency = 0.3
+SettingsButton.BorderSizePixel = 0
+SettingsButton.Text = "⚙️"
+SettingsButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+SettingsButton.Font = Enum.Font.SourceSansBold
+SettingsButton.TextSize = 12
+SettingsButton.Parent = TitleBar
+
+-- 信息按钮
 local InfoButton = Instance.new("TextButton")
 InfoButton.Name = "InfoButton"
-InfoButton.Size = UDim2.new(0, 25, 0, 25)
-InfoButton.Position = UDim2.new(1, -75, 0, 0)
-InfoButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
-InfoButton.BackgroundTransparency = 0.2
+InfoButton.Size = UDim2.new(0, 20, 0, 20)
+InfoButton.Position = UDim2.new(1, -70, 0, 0)
+InfoButton.BackgroundColor3 = Color3.fromRGB(50, 100, 150)
+InfoButton.BackgroundTransparency = 0.3
 InfoButton.BorderSizePixel = 0
-InfoButton.Text = "🔍"
+InfoButton.Text = "i"
 InfoButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-InfoButton.Font = Enum.Font.GothamBold
+InfoButton.Font = Enum.Font.SourceSansBold
 InfoButton.TextSize = 14
 InfoButton.Parent = TitleBar
 
-local InfoButtonGlow = Instance.new("UIStroke")
-InfoButtonGlow.Color = Color3.fromRGB(0, 150, 255)
-InfoButtonGlow.Thickness = 1
-InfoButtonGlow.Transparency = 0.7
-InfoButtonGlow.Parent = InfoButton
-
--- 展开/折叠按钮（科技感）
+-- 展开/折叠按钮
 local ToggleButton = Instance.new("TextButton")
 ToggleButton.Name = "ToggleButton"
-ToggleButton.Size = UDim2.new(0, 25, 0, 25)
+ToggleButton.Size = UDim2.new(0, 20, 0, 20)
 ToggleButton.Position = UDim2.new(1, -45, 0, 0)
-ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
-ToggleButton.BackgroundTransparency = 0.2
+ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+ToggleButton.BackgroundTransparency = 0.3
 ToggleButton.BorderSizePixel = 0
-ToggleButton.Text = "⬇"
+ToggleButton.Text = "+"
 ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButton.Font = Enum.Font.GothamBold
+ToggleButton.Font = Enum.Font.SourceSansBold
 ToggleButton.TextSize = 14
 ToggleButton.Parent = TitleBar
 
-local ToggleButtonGlow = Instance.new("UIStroke")
-ToggleButtonGlow.Color = Color3.fromRGB(100, 100, 150)
-ToggleButtonGlow.Thickness = 1
-ToggleButtonGlow.Transparency = 0.7
-ToggleButtonGlow.Parent = ToggleButton
-
--- 关闭按钮（红色警示）
+-- 关闭按钮
 local CloseButton = Instance.new("TextButton")
 CloseButton.Name = "CloseButton"
-CloseButton.Size = UDim2.new(0, 25, 0, 25)
+CloseButton.Size = UDim2.new(0, 20, 0, 20)
 CloseButton.Position = UDim2.new(1, -20, 0, 0)
-CloseButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-CloseButton.BackgroundTransparency = 0.2
+CloseButton.BackgroundColor3 = Color3.fromRGB(150, 50, 50)
+CloseButton.BackgroundTransparency = 0.3
 CloseButton.BorderSizePixel = 0
-CloseButton.Text = "✕"
+CloseButton.Text = "X"
 CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-CloseButton.Font = Enum.Font.GothamBold
+CloseButton.Font = Enum.Font.SourceSansBold
 CloseButton.TextSize = 14
 CloseButton.Parent = TitleBar
 
-local CloseButtonGlow = Instance.new("UIStroke")
-CloseButtonGlow.Color = Color3.fromRGB(255, 80, 80)
-CloseButtonGlow.Thickness = 1
-CloseButtonGlow.Transparency = 0.7
-CloseButtonGlow.Parent = CloseButton
-
--- 内容区域（半透明科技感）
+-- 内容区域（初始隐藏）
 local ContentFrame = Instance.new("Frame")
 ContentFrame.Name = "ContentFrame"
 ContentFrame.Size = UDim2.new(1, 0, 0, 0)
-ContentFrame.Position = UDim2.new(0, 0, 0, 25)
-ContentFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
-ContentFrame.BackgroundTransparency = 0.1
+ContentFrame.Position = UDim2.new(0, 0, 0, 20)
+ContentFrame.BackgroundColor3 = UISettings.Themes.default.ContentColor
+ContentFrame.BackgroundTransparency = UISettings.Transparency
 ContentFrame.BorderSizePixel = 0
 ContentFrame.ClipsDescendants = true
 ContentFrame.Parent = MainContainer
 
--- 滚动框架（现代风格）
+-- 滚动框架
 local ScrollFrame = Instance.new("ScrollingFrame")
 ScrollFrame.Name = "ScrollFrame"
-ScrollFrame.Size = UDim2.new(1, -10, 1, -10)
-ScrollFrame.Position = UDim2.new(0, 5, 0, 5)
+ScrollFrame.Size = UDim2.new(1, 0, 1, 0)
+ScrollFrame.Position = UDim2.new(0, 0, 0, 0)
 ScrollFrame.BackgroundTransparency = 1
 ScrollFrame.BorderSizePixel = 0
-ScrollFrame.ScrollBarThickness = 4
-ScrollFrame.ScrollBarImageColor3 = Color3.fromRGB(0, 150, 255)
-ScrollFrame.ScrollBarImageTransparency = 0.7
+ScrollFrame.ScrollBarThickness = 6
+ScrollFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
 ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
 ScrollFrame.Visible = false
 ScrollFrame.Parent = ContentFrame
@@ -155,267 +153,351 @@ ScrollFrame.Parent = ContentFrame
 -- UI布局
 local UIListLayout = Instance.new("UIListLayout")
 UIListLayout.Name = "UIListLayout"
-UIListLayout.Padding = UDim.new(0, 8)
+UIListLayout.Padding = UDim.new(0, 5)
 UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 UIListLayout.Parent = ScrollFrame
 
--- 脚本信息显示框（高科技风格）
+-- 设置面板（独立可移动）
+local SettingsFrame = Instance.new("Frame")
+SettingsFrame.Name = "SettingsFrame"
+SettingsFrame.Size = UDim2.new(0, 250, 0, 200)
+SettingsFrame.Position = UDim2.new(0, 220, 0, 30)
+SettingsFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+SettingsFrame.BackgroundTransparency = 0.3
+SettingsFrame.BorderSizePixel = 0
+SettingsFrame.Visible = false
+SettingsFrame.Active = true
+SettingsFrame.Draggable = true
+SettingsFrame.Parent = MRGui
+
+-- 设置面板标题栏
+local SettingsTitleBar = Instance.new("Frame")
+SettingsTitleBar.Name = "SettingsTitleBar"
+SettingsTitleBar.Size = UDim2.new(1, 0, 0, 20)
+SettingsTitleBar.Position = UDim2.new(0, 0, 0, 0)
+SettingsTitleBar.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+SettingsTitleBar.BackgroundTransparency = 0.3
+SettingsTitleBar.BorderSizePixel = 0
+SettingsTitleBar.Parent = SettingsFrame
+
+local SettingsTitle = Instance.new("TextLabel")
+SettingsTitle.Name = "SettingsTitle"
+SettingsTitle.Size = UDim2.new(1, -20, 1, 0)
+SettingsTitle.Position = UDim2.new(0, 5, 0, 0)
+SettingsTitle.BackgroundTransparency = 1
+SettingsTitle.Text = "设置"
+SettingsTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+SettingsTitle.TextXAlignment = Enum.TextXAlignment.Left
+SettingsTitle.Font = Enum.Font.SourceSansBold
+SettingsTitle.TextSize = 12
+SettingsTitle.Parent = SettingsTitleBar
+
+-- 关闭设置按钮
+local CloseSettingsButton = Instance.new("TextButton")
+CloseSettingsButton.Name = "CloseSettingsButton"
+CloseSettingsButton.Size = UDim2.new(0, 20, 0, 20)
+CloseSettingsButton.Position = UDim2.new(1, -20, 0, 0)
+CloseSettingsButton.BackgroundColor3 = Color3.fromRGB(150, 50, 50)
+CloseSettingsButton.BackgroundTransparency = 0.3
+CloseSettingsButton.BorderSizePixel = 0
+CloseSettingsButton.Text = "X"
+CloseSettingsButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseSettingsButton.Font = Enum.Font.SourceSansBold
+CloseSettingsButton.TextSize = 12
+CloseSettingsButton.Parent = SettingsTitleBar
+
+-- 透明度设置
+local TransparencyLabel = Instance.new("TextLabel")
+TransparencyLabel.Name = "TransparencyLabel"
+TransparencyLabel.Size = UDim2.new(1, -10, 0, 20)
+TransparencyLabel.Position = UDim2.new(0, 5, 0, 30)
+TransparencyLabel.BackgroundTransparency = 1
+TransparencyLabel.Text = "UI透明度: " .. math.floor(UISettings.Transparency * 100) .. "%"
+TransparencyLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TransparencyLabel.Font = Enum.Font.SourceSansBold
+TransparencyLabel.TextSize = 12
+TransparencyLabel.TextXAlignment = Enum.TextXAlignment.Left
+TransparencyLabel.Parent = SettingsFrame
+
+local TransparencySlider = Instance.new("Frame")
+TransparencySlider.Name = "TransparencySlider"
+TransparencySlider.Size = UDim2.new(1, -10, 0, 20)
+TransparencySlider.Position = UDim2.new(0, 5, 0, 55)
+TransparencySlider.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+TransparencySlider.BorderSizePixel = 0
+TransparencySlider.Parent = SettingsFrame
+
+local TransparencyFill = Instance.new("Frame")
+TransparencyFill.Name = "TransparencyFill"
+TransparencyFill.Size = UDim2.new(UISettings.Transparency, 0, 1, 0)
+TransparencyFill.Position = UDim2.new(0, 0, 0, 0)
+TransparencyFill.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+TransparencyFill.BorderSizePixel = 0
+TransparencyFill.Parent = TransparencySlider
+
+local TransparencyHandle = Instance.new("TextButton")
+TransparencyHandle.Name = "TransparencyHandle"
+TransparencyHandle.Size = UDim2.new(0, 10, 1, 0)
+TransparencyHandle.Position = UDim2.new(UISettings.Transparency, 0, 0, 0)
+TransparencyHandle.AnchorPoint = Vector2.new(0.5, 0)
+TransparencyHandle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TransparencyHandle.BorderSizePixel = 0
+TransparencyHandle.Text = ""
+TransparencyHandle.Parent = TransparencySlider
+
+-- 主题设置
+local ThemeLabel = Instance.new("TextLabel")
+ThemeLabel.Name = "ThemeLabel"
+ThemeLabel.Size = UDim2.new(1, -10, 0, 20)
+ThemeLabel.Position = UDim2.new(0, 5, 0, 85)
+ThemeLabel.BackgroundTransparency = 1
+ThemeLabel.Text = "UI主题颜色:"
+ThemeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+ThemeLabel.Font = Enum.Font.SourceSansBold
+ThemeLabel.TextSize = 12
+ThemeLabel.TextXAlignment = Enum.TextXAlignment.Left
+ThemeLabel.Parent = SettingsFrame
+
+local ThemeButtonsFrame = Instance.new("Frame")
+ThemeButtonsFrame.Name = "ThemeButtonsFrame"
+ThemeButtonsFrame.Size = UDim2.new(1, -10, 0, 30)
+ThemeButtonsFrame.Position = UDim2.new(0, 5, 0, 110)
+ThemeButtonsFrame.BackgroundTransparency = 1
+ThemeButtonsFrame.Parent = SettingsFrame
+
+-- 默认主题按钮
+local DefaultThemeButton = Instance.new("TextButton")
+DefaultThemeButton.Name = "DefaultThemeButton"
+DefaultThemeButton.Size = UDim2.new(0.3, 0, 1, 0)
+DefaultThemeButton.Position = UDim2.new(0, 0, 0, 0)
+DefaultThemeButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+DefaultThemeButton.BackgroundTransparency = 0.3
+DefaultThemeButton.BorderSizePixel = 0
+DefaultThemeButton.Text = "默认"
+DefaultThemeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+DefaultThemeButton.Font = Enum.Font.SourceSans
+DefaultThemeButton.TextSize = 12
+DefaultThemeButton.Parent = ThemeButtonsFrame
+
+-- 白色主题按钮
+local WhiteThemeButton = Instance.new("TextButton")
+WhiteThemeButton.Name = "WhiteThemeButton"
+WhiteThemeButton.Size = UDim2.new(0.3, 0, 1, 0)
+WhiteThemeButton.Position = UDim2.new(0.35, 0, 0, 0)
+WhiteThemeButton.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+WhiteThemeButton.BackgroundTransparency = 0.3
+WhiteThemeButton.BorderSizePixel = 0
+WhiteThemeButton.Text = "白色"
+WhiteThemeButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+WhiteThemeButton.Font = Enum.Font.SourceSans
+WhiteThemeButton.TextSize = 12
+WhiteThemeButton.Parent = ThemeButtonsFrame
+
+-- 黑色主题按钮
+local BlackThemeButton = Instance.new("TextButton")
+BlackThemeButton.Name = "BlackThemeButton"
+BlackThemeButton.Size = UDim2.new(0.3, 0, 1, 0)
+BlackThemeButton.Position = UDim2.new(0.7, 0, 0, 0)
+BlackThemeButton.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+BlackThemeButton.BackgroundTransparency = 0.3
+BlackThemeButton.BorderSizePixel = 0
+BlackThemeButton.Text = "黑色"
+BlackThemeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+BlackThemeButton.Font = Enum.Font.SourceSans
+BlackThemeButton.TextSize = 12
+BlackThemeButton.Parent = ThemeButtonsFrame
+
+-- 重置设置按钮
+local ResetSettingsButton = Instance.new("TextButton")
+ResetSettingsButton.Name = "ResetSettingsButton"
+ResetSettingsButton.Size = UDim2.new(1, -10, 0, 25)
+ResetSettingsButton.Position = UDim2.new(0, 5, 0, 150)
+ResetSettingsButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+ResetSettingsButton.BackgroundTransparency = 0.3
+ResetSettingsButton.BorderSizePixel = 0
+ResetSettingsButton.Text = "重置设置"
+ResetSettingsButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ResetSettingsButton.Font = Enum.Font.SourceSansBold
+ResetSettingsButton.TextSize = 12
+ResetSettingsButton.Parent = SettingsFrame
+
+-- 脚本信息显示框（独立可移动，带滚动）
 local InfoFrame = Instance.new("Frame")
 InfoFrame.Name = "InfoFrame"
-InfoFrame.Size = UDim2.new(0, 280, 0, 350)
+InfoFrame.Size = UDim2.new(0, 250, 0, 300)
 InfoFrame.Position = UDim2.new(0, 220, 0, 30)
-InfoFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
-InfoFrame.BackgroundTransparency = 0.1
+InfoFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+InfoFrame.BackgroundTransparency = 0.5
 InfoFrame.BorderSizePixel = 0
 InfoFrame.Visible = false
 InfoFrame.Active = true
 InfoFrame.Draggable = true
 InfoFrame.Parent = MRGui
 
-local InfoBorderGlow = Instance.new("UIStroke")
-InfoBorderGlow.Color = Color3.fromRGB(0, 200, 255)
-InfoBorderGlow.Thickness = 2
-InfoBorderGlow.Transparency = 0.6
-InfoBorderGlow.Parent = InfoFrame
-
--- 信息框标题栏（渐变效果）
+-- 信息框标题栏
 local InfoTitleBar = Instance.new("Frame")
 InfoTitleBar.Name = "InfoTitleBar"
-InfoTitleBar.Size = UDim2.new(1, 0, 0, 30)
+InfoTitleBar.Size = UDim2.new(1, 0, 0, 20)
 InfoTitleBar.Position = UDim2.new(0, 0, 0, 0)
-InfoTitleBar.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
-InfoTitleBar.BackgroundTransparency = 0.1
+InfoTitleBar.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+InfoTitleBar.BackgroundTransparency = 0.3
 InfoTitleBar.BorderSizePixel = 0
 InfoTitleBar.Parent = InfoFrame
 
-local InfoTitleGradient = Instance.new("UIGradient")
-InfoTitleGradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 150, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 200, 255))
-}
-InfoTitleGradient.Rotation = 90
-InfoTitleGradient.Parent = InfoTitleBar
-
 local InfoTitle = Instance.new("TextLabel")
 InfoTitle.Name = "InfoTitle"
-InfoTitle.Size = UDim2.new(1, -40, 1, 0)
-InfoTitle.Position = UDim2.new(0, 10, 0, 0)
+InfoTitle.Size = UDim2.new(1, -20, 1, 0)
+InfoTitle.Position = UDim2.new(0, 5, 0, 0)
 InfoTitle.BackgroundTransparency = 1
-InfoTitle.Text = "🚀 脚本信息 v3.99"
+InfoTitle.Text = "脚本信息 - v2.99"
 InfoTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
 InfoTitle.TextXAlignment = Enum.TextXAlignment.Left
-InfoTitle.Font = Enum.Font.GothamBold
-InfoTitle.TextSize = 14
+InfoTitle.Font = Enum.Font.SourceSansBold
+InfoTitle.TextSize = 12
 InfoTitle.Parent = InfoTitleBar
 
 -- 关闭信息按钮
 local CloseInfoButton = Instance.new("TextButton")
 CloseInfoButton.Name = "CloseInfoButton"
-CloseInfoButton.Size = UDim2.new(0, 30, 0, 30)
-CloseInfoButton.Position = UDim2.new(1, -30, 0, 0)
-CloseInfoButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-CloseInfoButton.BackgroundTransparency = 0.2
+CloseInfoButton.Size = UDim2.new(0, 20, 0, 20)
+CloseInfoButton.Position = UDim2.new(1, -20, 0, 0)
+CloseInfoButton.BackgroundColor3 = Color3.fromRGB(150, 50, 50)
+CloseInfoButton.BackgroundTransparency = 0.3
 CloseInfoButton.BorderSizePixel = 0
-CloseInfoButton.Text = "✕"
+CloseInfoButton.Text = "X"
 CloseInfoButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-CloseInfoButton.Font = Enum.Font.GothamBold
-CloseInfoButton.TextSize = 16
+CloseInfoButton.Font = Enum.Font.SourceSansBold
+CloseInfoButton.TextSize = 12
 CloseInfoButton.Parent = InfoTitleBar
-
-local CloseInfoGlow = Instance.new("UIStroke")
-CloseInfoGlow.Color = Color3.fromRGB(255, 80, 80)
-CloseInfoGlow.Thickness = 1
-CloseInfoGlow.Parent = CloseInfoButton
 
 -- 信息内容滚动框架
 local InfoScrollFrame = Instance.new("ScrollingFrame")
 InfoScrollFrame.Name = "InfoScrollFrame"
-InfoScrollFrame.Size = UDim2.new(1, -10, 1, -40)
-InfoScrollFrame.Position = UDim2.new(0, 5, 0, 35)
+InfoScrollFrame.Size = UDim2.new(1, -10, 1, -30)
+InfoScrollFrame.Position = UDim2.new(0, 5, 0, 25)
 InfoScrollFrame.BackgroundTransparency = 1
 InfoScrollFrame.BorderSizePixel = 0
-InfoScrollFrame.ScrollBarThickness = 4
-InfoScrollFrame.ScrollBarImageColor3 = Color3.fromRGB(0, 150, 255)
-InfoScrollFrame.ScrollBarImageTransparency = 0.7
+InfoScrollFrame.ScrollBarThickness = 6
+InfoScrollFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
 InfoScrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
 InfoScrollFrame.Parent = InfoFrame
 
 -- 信息内容布局
 local InfoListLayout = Instance.new("UIListLayout")
 InfoListLayout.Name = "InfoListLayout"
-InfoListLayout.Padding = UDim.new(0, 6)
+InfoListLayout.Padding = UDim.new(0, 5)
 InfoListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 InfoListLayout.Parent = InfoScrollFrame
-
--- 添加悬停动画效果
-local function AddHoverEffect(button)
-    local originalSize = button.Size
-    local originalColor = button.BackgroundColor3
-    
-    button.MouseEnter:Connect(function()
-        local tween = TweenService:Create(button, TweenInfo.new(0.2), {
-            Size = originalSize + UDim2.new(0, 5, 0, 5),
-            BackgroundColor3 = Color3.fromRGB(
-                math.min(originalColor.R * 255 + 20, 255),
-                math.min(originalColor.G * 255 + 20, 255),
-                math.min(originalColor.B * 255 + 20, 255)
-            ) / 255
-        })
-        tween:Play()
-    end)
-    
-    button.MouseLeave:Connect(function()
-        local tween = TweenService:Create(button, TweenInfo.new(0.2), {
-            Size = originalSize,
-            BackgroundColor3 = originalColor
-        })
-        tween:Play()
-    end)
-end
 
 -- UI状态变量
 local IsExpanded = false
 local IsInfoVisible = false
+local IsSettingsVisible = false
 local IsDragging = false
 local IsInfoDragging = false
+local IsSettingsDragging = false
+local IsTransparencyDragging = false
 local DragStartPos
 local InfoDragStartPos
+local SettingsDragStartPos
 
 -- 脚本数据表
 local Scripts = {
     {
-        Name = "🦈 鲨鱼咬2",
-        Color = Color3.fromRGB(0, 180, 120),
+        Name = "鲨鱼咬2",
+        Color = Color3.fromRGB(60, 120, 60),
         LoadFunction = function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/SharkBite2汉化.lua"))()
         end
     },
     {
-        Name = "🔫 超速射击",
-        Color = Color3.fromRGB(220, 80, 80),
+        Name = "超速射击",
+        Color = Color3.fromRGB(120, 60, 60),
         LoadFunction = function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/Hypershot汉化.lua"))()
         end
     },
     {
-        Name = "🎨 墨水游戏",
-        Color = Color3.fromRGB(160, 100, 220),
+        Name = "墨水游戏",
+        Color = Color3.fromRGB(80, 60, 120),
         LoadFunction = function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/墨水汉化.lua"))()
         end
     },
     {
-        Name = "✈️ 通用飞行",
-        Color = Color3.fromRGB(80, 150, 255),
+        Name = "通用飞行",
+        Color = Color3.fromRGB(60, 100, 150),
         LoadFunction = function()
             loadstring("\108\111\97\100\115\116\114\105\110\103\40\103\97\109\101\58\72\116\116\112\71\101\116\40\34\104\116\116\112\115\58\47\47\112\97\115\116\101\98\105\110\46\99\111\109\47\114\97\119\47\90\66\122\99\84\109\49\102\34\41\41\40\41\10")()
         end
     }
+    -- 在这里添加更多脚本...
 }
 
 -- 信息内容数据
 local InfoContents = {
-    "🌟 MR脚本集合 v3.0",
-    "✨ 全新酷炫界面设计",
-    "",
-    "🎯 功能特点：",
-    "• ⚡ 高性能脚本加载",
-    "• 🎨 现代化UI界面",
-    "• 🔄 实时状态显示",
-    "• 🚀 流畅动画效果",
+    "🎯 MR脚本集合 v2.4",
+    "✨ 新增功能：",
+    "• 设置面板（⚙️按钮）",
+    "• UI透明度调节",
+    "• 白色/黑色主题切换",
+    "• 重置设置功能",
     "",
     "🛠️ 使用方法：",
-    "• 📱 点击脚本按钮加载功能",
-    "• 🔍 点击🔍按钮查看信息",
-    "• 🖱️ 拖动标题栏移动界面",
-    "• 📜 滚轮浏览所有内容",
-    "",
-    "📊 系统信息：",
-    "• 🎮 游戏: " .. game.Name,
-    "• 👤 玩家: " .. Player.Name,
-    "• 📅 版本: 3.0",
-    "• ⏰ 时间: " .. os.date("%Y-%m-%d"),
-    "",
-    "⚡ 性能优化：",
-    "• 💾 内存高效使用",
-    "• 🚀 快速加载速度",
-    "• 🎯 精准功能执行",
-    "",
-    "🌐 技术支持：",
-    "• 💻 基于Roblox Lua",
-    "• 🎨 现代化设计语言",
-    "• 🔧 模块化架构",
-    "",
-    "⚠️ 注意事项：",
-    "• ✅ 请在允许环境使用",
-    "• 📜 遵守游戏规则",
-    "• 🔄 定期更新版本",
-    "",
-    "🎉 享受使用体验！"
+    "• 点击设置按钮调整UI外观",
+    "• 拖动滑块改变透明度",
+    "• 选择喜欢的颜色主题",
+    "• 点击重置恢复默认设置"
 }
 
--- 创建酷炫脚本按钮
+-- 应用UI设置
+local function ApplyUISettings()
+    local theme = UISettings.Themes[UISettings.Theme]
+    
+    -- 应用透明度
+    MainContainer.BackgroundTransparency = UISettings.Transparency
+    TitleBar.BackgroundTransparency = UISettings.Transparency
+    ContentFrame.BackgroundTransparency = UISettings.Transparency
+    SettingsFrame.BackgroundTransparency = UISettings.Transparency
+    SettingsTitleBar.BackgroundTransparency = UISettings.Transparency
+    
+    -- 应用颜色主题
+    MainContainer.BackgroundColor3 = theme.MainColor
+    TitleBar.BackgroundColor3 = theme.TitleColor
+    ContentFrame.BackgroundColor3 = theme.ContentColor
+    
+    -- 更新透明度标签
+    TransparencyLabel.Text = "UI透明度: " .. math.floor(UISettings.Transparency * 100) .. "%"
+    TransparencyFill.Size = UDim2.new(UISettings.Transparency, 0, 1, 0)
+    TransparencyHandle.Position = UDim2.new(UISettings.Transparency, 0, 0, 0)
+end
+
+-- 创建脚本按钮
 local function CreateScriptButtons()
     for i, scriptData in ipairs(Scripts) do
         local button = Instance.new("TextButton")
         button.Name = scriptData.Name .. "Button"
-        button.Size = UDim2.new(1, 0, 0, 35)
+        button.Size = UDim2.new(1, -10, 0, 30)
+        button.Position = UDim2.new(0, 5, 0, (i-1)*35 + 5)
         button.BackgroundColor3 = scriptData.Color
-        button.BackgroundTransparency = 0.2
+        button.BackgroundTransparency = 0.3
         button.BorderSizePixel = 0
         button.Text = scriptData.Name
         button.TextColor3 = Color3.fromRGB(255, 255, 255)
-        button.Font = Enum.Font.GothamBold
-        button.TextSize = 13
-        button.TextXAlignment = Enum.TextXAlignment.Left
+        button.Font = Enum.Font.SourceSansBold
+        button.TextSize = 14
         button.LayoutOrder = i
         button.Visible = false
         
-        -- 添加按钮光效
-        local buttonGlow = Instance.new("UIStroke")
-        buttonGlow.Color = scriptData.Color
-        buttonGlow.Thickness = 1
-        buttonGlow.Transparency = 0.7
-        buttonGlow.Parent = button
-        
-        -- 添加图标间距
-        button.Padding = UDim.new(0, 10)
-        
         button.MouseButton1Click:Connect(function()
-            -- 显示加载动画
-            local originalText = button.Text
-            button.Text = "⏳ 加载中..."
-            
-            -- 添加加载动画效果
-            local loadTween = TweenService:Create(button, TweenInfo.new(0.3), {
-                BackgroundTransparency = 0.5
-            })
-            loadTween:Play()
-            
-            -- 执行脚本加载函数
+            local oldText = button.Text
+            button.Text = "加载中..."
             pcall(scriptData.LoadFunction)
-            
-            -- 2秒后恢复
-            delay(1.5, function()
-                if button then
-                    local completeTween = TweenService:Create(button, TweenInfo.new(0.3), {
-                        BackgroundTransparency = 0.2,
-                        Text = "✅ " .. originalText:gsub("^[^%s]%s*", "")
-                    })
-                    completeTween:Play()
-                    
-                    -- 3秒后恢复原文本
-                    delay(2, function()
-                        if button then
-                            button.Text = originalText
-                        end
-                    end)
-                end
+            delay(2, function()
+                if button then button.Text = oldText end
             end)
         end)
         
-        -- 添加悬停效果
-        AddHoverEffect(button)
         button.Parent = ScrollFrame
     end
 end
@@ -429,23 +511,21 @@ local function CreateInfoContent()
         textLabel.BackgroundTransparency = 1
         textLabel.Text = content
         textLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
-        textLabel.Font = Enum.Font.Gotham
+        textLabel.Font = Enum.Font.SourceSans
         textLabel.TextSize = 12
         textLabel.TextXAlignment = Enum.TextXAlignment.Left
         textLabel.TextWrapped = true
         textLabel.LayoutOrder = i
         textLabel.AutomaticSize = Enum.AutomaticSize.Y
         
-        -- 样式设置
-        if content:find("🌟") or content:find("✨") or content:find("🎯") or content:find("🛠️") or content:find("📊") or content:find("⚡") or content:find("🌐") or content:find("⚠️") then
-            textLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
-            textLabel.Font = Enum.Font.GothamBold
-            textLabel.TextSize = 13
+        if content:find("🎯") or content:find("✨") or content:find("🛠️") then
+            textLabel.TextColor3 = Color3.fromRGB(255, 255, 150)
+            textLabel.Font = Enum.Font.SourceSansBold
         elseif content:find("•") then
-            textLabel.TextColor3 = Color3.fromRGB(180, 200, 220)
-            textLabel.Position = UDim2.new(0, 15, 0, 0)
+            textLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+            textLabel.Position = UDim2.new(0, 10, 0, 0)
         elseif content == "" then
-            textLabel.Size = UDim2.new(1, 0, 0, 8)
+            textLabel.Size = UDim2.new(1, 0, 0, 10)
             textLabel.Text = ""
         end
         
@@ -455,7 +535,7 @@ end
 
 -- 更新滚动框架大小
 local function UpdateScrollSize()
-    local totalHeight = #Scripts * 35 + (#Scripts - 1) * 8 + 10
+    local totalHeight = #Scripts * 35 + (#Scripts - 1) * 5 + 10
     ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
 end
 
@@ -464,10 +544,22 @@ local function UpdateInfoScrollSize()
     local totalHeight = 0
     for _, child in ipairs(InfoScrollFrame:GetChildren()) do
         if child:IsA("TextLabel") then
-            totalHeight = totalHeight + child.AbsoluteSize.Y + 6
+            totalHeight = totalHeight + child.AbsoluteSize.Y + 5
         end
     end
     InfoScrollFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
+end
+
+-- 切换设置显示
+local function ToggleSettings()
+    IsSettingsVisible = not IsSettingsVisible
+    SettingsFrame.Visible = IsSettingsVisible
+    
+    if IsSettingsVisible then
+        local mainPos = MainContainer.AbsolutePosition
+        local mainSize = MainContainer.AbsoluteSize
+        SettingsFrame.Position = UDim2.new(0, mainPos.X + mainSize.X + 10, 0, mainPos.Y)
+    end
 end
 
 -- 切换信息显示
@@ -476,27 +568,9 @@ local function ToggleInfo()
     InfoFrame.Visible = IsInfoVisible
     
     if IsInfoVisible then
-        -- 显示动画
-        InfoFrame.Size = UDim2.new(0, 0, 0, 0)
-        InfoFrame.Visible = true
-        local tween = TweenService:Create(InfoFrame, TweenInfo.new(0.3), {
-            Size = UDim2.new(0, 280, 0, 350)
-        })
-        tween:Play()
-        
-        -- 定位到主UI右侧
         local mainPos = MainContainer.AbsolutePosition
         local mainSize = MainContainer.AbsoluteSize
         InfoFrame.Position = UDim2.new(0, mainPos.X + mainSize.X + 10, 0, mainPos.Y)
-    else
-        -- 隐藏动画
-        local tween = TweenService:Create(InfoFrame, TweenInfo.new(0.2), {
-            Size = UDim2.new(0, 0, 0, 0)
-        })
-        tween:Play()
-        tween.Completed:Connect(function()
-            InfoFrame.Visible = false
-        end)
     end
 end
 
@@ -505,84 +579,77 @@ local function ToggleUI()
     IsExpanded = not IsExpanded
     
     if IsExpanded then
-        ToggleButton.Text = "⬆"
-        local contentHeight = math.min(#Scripts * 35 + (#Scripts) * 8 + 10, 250)
+        ToggleButton.Text = "-"
+        local contentHeight = math.min(#Scripts * 35 + (#Scripts) * 5 + 10, 250)
+        MainContainer.Size = UDim2.new(0, 200, 0, contentHeight + 40)
+        ContentFrame.Size = UDim2.new(1, 0, 0, contentHeight)
+        ScrollFrame.Visible = true
         
-        -- 展开动画
-        local tween = TweenService:Create(MainContainer, TweenInfo.new(0.3), {
-            Size = UDim2.new(0, 220, 0, contentHeight + 35)
-        })
-        tween:Play()
-        
-        tween.Completed:Connect(function()
-            ContentFrame.Size = UDim2.new(1, 0, 0, contentHeight)
-            ScrollFrame.Visible = true
-            
-            -- 显示所有按钮
-            for _, child in ipairs(ScrollFrame:GetChildren()) do
-                if child:IsA("TextButton") then
-                    child.Visible = true
-                end
-            end
-        end)
+        for _, child in ipairs(ScrollFrame:GetChildren()) do
+            if child:IsA("TextButton") then child.Visible = true end
+        end
     else
-        ToggleButton.Text = "⬇"
+        ToggleButton.Text = "+"
+        MainContainer.Size = UDim2.new(0, 100, 0, 40)
+        ContentFrame.Size = UDim2.new(1, 0, 0, 0)
         ScrollFrame.Visible = false
-        
-        -- 折叠动画
-        local tween = TweenService:Create(MainContainer, TweenInfo.new(0.3), {
-            Size = UDim2.new(0, 100, 0, 40)
-        })
-        tween:Play()
-        
-        tween.Completed:Connect(function()
-            ContentFrame.Size = UDim2.new(1, 0, 0, 0)
-        end)
     end
 end
 
 -- 关闭UI
 local function CloseUI()
-    -- 关闭动画
-    local tween = TweenService:Create(MainContainer, TweenInfo.new(0.2), {
-        Size = UDim2.new(0, 0, 0, 0),
-        BackgroundTransparency = 1
-    })
-    tween:Play()
+    MRGui:Destroy()
+    print("MR脚本UI已关闭")
+end
+
+-- 重置设置
+local function ResetSettings()
+    UISettings.Transparency = 0.3
+    UISettings.Theme = "default"
+    ApplyUISettings()
+    print("设置已重置为默认值")
+end
+
+-- 处理拖动事件
+local function SetupDragging(frame, dragFlag, startPosFlag)
+    frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            _G[dragFlag] = true
+            _G[startPosFlag] = Vector2.new(input.Position.X, input.Position.Y)
+            frame.Draggable = false
+        end
+    end)
     
-    tween.Completed:Connect(function()
-        MRGui:Destroy()
+    frame.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            _G[dragFlag] = false
+            frame.Draggable = true
+        end
     end)
 end
 
--- 处理拖动
-TitleBar.InputBegan:Connect(function(input)
+-- 初始化
+CreateScriptButtons()
+CreateInfoContent()
+UpdateScrollSize()
+UpdateInfoScrollSize()
+ApplyUISettings()
+
+-- 设置拖动
+SetupDragging(TitleBar, "IsDragging", "DragStartPos")
+SetupDragging(InfoTitleBar, "IsInfoDragging", "InfoDragStartPos")
+SetupDragging(SettingsTitleBar, "IsSettingsDragging", "SettingsDragStartPos")
+
+-- 透明度滑块拖动
+TransparencyHandle.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        IsDragging = true
-        DragStartPos = Vector2.new(input.Position.X, input.Position.Y)
-        MainContainer.Draggable = false
+        IsTransparencyDragging = true
     end
 end)
 
-TitleBar.InputEnded:Connect(function(input)
+TransparencyHandle.InputEnded:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        IsDragging = false
-        MainContainer.Draggable = true
-    end
-end)
-
-InfoTitleBar.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        IsInfoDragging = true
-        InfoDragStartPos = Vector2.new(input.Position.X, input.Position.Y)
-        InfoFrame.Draggable = false
-    end
-end)
-
-InfoTitleBar.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        IsInfoDragging = false
-        InfoFrame.Draggable = true
+        IsTransparencyDragging = false
     end
 end)
 
@@ -598,51 +665,57 @@ UserInputService.InputChanged:Connect(function(input)
         InfoFrame.Position = UDim2.new(0, InfoFrame.Position.X.Offset + delta.X, 0, InfoFrame.Position.Y.Offset + delta.Y)
         InfoDragStartPos = Vector2.new(input.Position.X, input.Position.Y)
     end
+    
+    if IsSettingsDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = Vector2.new(input.Position.X, input.Position.Y) - SettingsDragStartPos
+        SettingsFrame.Position = UDim2.new(0, SettingsFrame.Position.X.Offset + delta.X, 0, SettingsFrame.Position.Y.Offset + delta.Y)
+        SettingsDragStartPos = Vector2.new(input.Position.X, input.Position.Y)
+    end
+    
+    if IsTransparencyDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local mousePos = UserInputService:GetMouseLocation()
+        local sliderPos = TransparencySlider.AbsolutePosition
+        local sliderSize = TransparencySlider.AbsoluteSize.X
+        local relativeX = math.clamp((mousePos.X - sliderPos.X) / sliderSize, 0, 1)
+        
+        UISettings.Transparency = relativeX
+        ApplyUISettings()
+    end
 end)
 
 -- 按钮点击事件
 ToggleButton.MouseButton1Click:Connect(ToggleUI)
 CloseButton.MouseButton1Click:Connect(CloseUI)
 InfoButton.MouseButton1Click:Connect(ToggleInfo)
-CloseInfoButton.MouseButton1Click:Connect(function()
-    IsInfoVisible = false
-    InfoFrame.Visible = false
+SettingsButton.MouseButton1Click:Connect(ToggleSettings)
+CloseInfoButton.MouseButton1Click:Connect(function() InfoFrame.Visible = false end)
+CloseSettingsButton.MouseButton1Click:Connect(function() SettingsFrame.Visible = false end)
+
+-- 主题按钮点击
+DefaultThemeButton.MouseButton1Click:Connect(function()
+    UISettings.Theme = "default"
+    ApplyUISettings()
 end)
 
--- 添加按钮悬停效果
-AddHoverEffect(InfoButton)
-AddHoverEffect(ToggleButton)
-AddHoverEffect(CloseButton)
-AddHoverEffect(CloseInfoButton)
+WhiteThemeButton.MouseButton1Click:Connect(function()
+    UISettings.Theme = "white"
+    ApplyUISettings()
+end)
 
--- 初始化
-CreateScriptButtons()
-CreateInfoContent()
-UpdateScrollSize()
-UpdateInfoScrollSize()
+BlackThemeButton.MouseButton1Click:Connect(function()
+    UISettings.Theme = "black"
+    ApplyUISettings()
+end)
+
+ResetSettingsButton.MouseButton1Click:Connect(ResetSettings)
 
 -- 布局变化时更新滚动大小
-UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-    UpdateScrollSize()
-end)
-
-InfoListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-    UpdateInfoScrollSize()
-end)
-
--- 添加边框光效动画
-local glowAnimation = 0
-RunService.Heartbeat:Connect(function(deltaTime)
-    glowAnimation = (glowAnimation + deltaTime * 2) % (2 * math.pi)
-    local glowIntensity = (math.sin(glowAnimation) + 1) * 0.3
-    BorderGlow.Transparency = 0.5 - glowIntensity
-    InfoBorderGlow.Transparency = 0.4 - glowIntensity
-end)
+UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(UpdateScrollSize)
+InfoListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(UpdateInfoScrollSize)
 
 -- 初始化UI
-print("🎉 MR脚本UI v3.0 已加载！")
-print("✨ 酷炫现代化界面")
-print("🚀 支持无限添加脚本")
-print("🔍 点击🔍按钮查看信息")
-print("🖱️ 长按标题栏拖动界面")
-print("⚡ 享受流畅的使用体验！")
+print("MR脚本UI v2.4 已加载！")
+print("新增设置功能：透明度调节和主题切换")
+print("点击⚙️按钮打开设置面板")
+print("点击i按钮查看信息")
+print("点击+按钮展开脚本列表")
