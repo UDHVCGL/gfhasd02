@@ -36,17 +36,24 @@ local Scripts = {
         LoadFunction = function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/DOORS.lua"))()
         end
+    },
+    {
+        Name = "死铁轨",
+        Color = Color3.fromRGB(60, 60, 150),
+        LoadFunction = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/死铁轨汉化.lua"))()
+        end
     }
 }
 
 -- 信息内容数据
 local InfoContents = {
     "🎯 MR脚本中心 正式版v1",
-    "✨ 更新公告：",
-    "• 更新服务器DOORS",
+    "✨ v2更新公告：",
+    "• 更新服务器死铁轨",
     "• 不定期更新",
-    "• 后续更新:被遗弃，死铁轨，起床战争",
-    "• 更新时间:2025/9/20",
+    "• 后续更新:被遗弃，刀刃球，起床战争",
+    "• 更新时间:2025/9/21",
     "",
     "💎 重要信息：",
     "• MR脚本创始人:MR",
