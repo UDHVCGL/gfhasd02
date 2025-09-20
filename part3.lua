@@ -20,7 +20,7 @@ local Scripts = {
         Name = "超速射击",
         Color = Color3.fromRGB(120, 60, 60),
         LoadFunction = function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/Hypersshot汉化.lua"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/Hypershot汉化.lua"))()
         end
     },
     {
