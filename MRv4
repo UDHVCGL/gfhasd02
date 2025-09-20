@@ -1,11 +1,12 @@
 -- MR脚本 UI界面
--- 版本：3.0
--- 描述：添加分类系统，优化设置选项
+-- 版本：3.1
+-- 描述：删除分类系统，优化设置，添加保存功能
 
 local Player = game:GetService("Players").LocalPlayer
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local CoreGui = game:GetService("CoreGui")
+local HttpService = game:GetService("HttpService")
 
 -- 创建主UI
 local MRGui = Instance.new("ScreenGui")
@@ -13,41 +14,71 @@ MRGui.Name = "MRGui"
 MRGui.Parent = CoreGui
 MRGui.ResetOnSpawn = false
 
--- UI设置数据
-local UISettings = {
-    Theme = "default",
-    Transparency = "中等", -- 改为选项形式
-    TransparencyOptions = {
-        ["低透明度"] = 0.1,
-        ["中等"] = 0.3,
-        ["高透明度"] = 0.5,
-        ["极高"] = 0.7
-    },
-    Themes = {
-        default = {
-            MainColor = Color3.fromRGB(30, 30, 30),
-            TitleColor = Color3.fromRGB(20, 20, 20),
-            ContentColor = Color3.fromRGB(40, 40, 40)
+-- 尝试加载保存的设置
+local function LoadSettings()
+    local success, savedSettings = pcall(function()
+        if readfile then
+            return HttpService:JSONDecode(readfile("MR_Settings.json"))
+        end
+    end)
+    
+    if success and savedSettings then
+        return savedSettings
+    end
+    
+    -- 默认设置
+    return {
+        Theme = "default",
+        Transparency = "中等",
+        TransparencyOptions = {
+            ["低透明度"] = 0.1,
+            ["中等"] = 0.3,
+            ["高透明度"] = 0.5,
+            ["极高"] = 0.7
         },
-        white = {
-            MainColor = Color3.fromRGB(240, 240, 240),
-            TitleColor = Color3.fromRGB(220, 220, 220),
-            ContentColor = Color3.fromRGB(250, 250, 250)
-        },
-        black = {
-            MainColor = Color3.fromRGB(10, 10, 10),
-            TitleColor = Color3.fromRGB(0, 0, 0),
-            ContentColor = Color3.fromRGB(20, 20, 20)
+        Themes = {
+            default = {
+                MainColor = Color3.fromRGB(30, 30, 30),
+                TitleColor = Color3.fromRGB(20, 20, 20),
+                ContentColor = Color3.fromRGB(40, 40, 40)
+            },
+            white = {
+                MainColor = Color3.fromRGB(240, 240, 240),
+                TitleColor = Color3.fromRGB(220, 220, 220),
+                ContentColor = Color3.fromRGB(250, 250, 250)
+            },
+            black = {
+                MainColor = Color3.fromRGB(10, 10, 10),
+                TitleColor = Color3.fromRGB(0, 0, 0),
+                ContentColor = Color3.fromRGB(20, 20, 20)
+            }
         }
     }
-}
+end
+
+-- 保存设置
+local function SaveSettings(settings)
+    pcall(function()
+        if writefile then
+            -- 只保存需要持久化的数据
+            local saveData = {
+                Theme = settings.Theme,
+                Transparency = settings.Transparency
+            }
+            writefile("MR_Settings.json", HttpService:JSONEncode(saveData))
+        end
+    end)
+end
+
+-- UI设置数据
+local UISettings = LoadSettings()
 
 -- 主容器
 local MainContainer = Instance.new("Frame")
 MainContainer.Name = "MainContainer"
 MainContainer.Size = UDim2.new(0, 150, 0, 40)
 MainContainer.Position = UDim2.new(0, 10, 0, 10)
-MainContainer.BackgroundColor3 = UISettings.Themes.default.MainColor
+MainContainer.BackgroundColor3 = UISettings.Themes[UISettings.Theme].MainColor
 MainContainer.BackgroundTransparency = UISettings.TransparencyOptions[UISettings.Transparency]
 MainContainer.BorderSizePixel = 0
 MainContainer.Active = true
@@ -59,7 +90,7 @@ local TitleBar = Instance.new("Frame")
 TitleBar.Name = "TitleBar"
 TitleBar.Size = UDim2.new(1, 0, 0, 20)
 TitleBar.Position = UDim2.new(0, 0, 0, 0)
-TitleBar.BackgroundColor3 = UISettings.Themes.default.TitleColor
+TitleBar.BackgroundColor3 = UISettings.Themes[UISettings.Theme].TitleColor
 TitleBar.BackgroundTransparency = UISettings.TransparencyOptions[UISettings.Transparency]
 TitleBar.BorderSizePixel = 0
 TitleBar.Parent = MainContainer
@@ -156,36 +187,17 @@ local ContentFrame = Instance.new("Frame")
 ContentFrame.Name = "ContentFrame"
 ContentFrame.Size = UDim2.new(1, 0, 0, 0)
 ContentFrame.Position = UDim2.new(0, 0, 0, 20)
-ContentFrame.BackgroundColor3 = UISettings.Themes.default.ContentColor
+ContentFrame.BackgroundColor3 = UISettings.Themes[UISettings.Theme].ContentColor
 ContentFrame.BackgroundTransparency = UISettings.TransparencyOptions[UISettings.Transparency]
 ContentFrame.BorderSizePixel = 0
 ContentFrame.ClipsDescendants = true
 ContentFrame.Parent = MainContainer
 
--- 分类选项卡容器
-local TabContainer = Instance.new("Frame")
-TabContainer.Name = "TabContainer"
-TabContainer.Size = UDim2.new(1, 0, 0, 30)
-TabContainer.Position = UDim2.new(0, 0, 0, 0)
-TabContainer.BackgroundTransparency = 1
-TabContainer.Visible = false
-TabContainer.Parent = ContentFrame
-
--- 分类选项卡布局
-local TabLayout = Instance.new("UIListLayout")
-TabLayout.Name = "TabLayout"
-TabLayout.FillDirection = Enum.FillDirection.Horizontal
-TabLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
-TabLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-TabLayout.SortOrder = Enum.SortOrder.LayoutOrder
-TabLayout.Padding = UDim.new(0, 5)
-TabLayout.Parent = TabContainer
-
 -- 脚本滚动框架
 local ScrollFrame = Instance.new("ScrollingFrame")
 ScrollFrame.Name = "ScrollFrame"
-ScrollFrame.Size = UDim2.new(1, 0, 1, -30) -- 为分类选项卡留出空间
-ScrollFrame.Position = UDim2.new(0, 0, 0, 30)
+ScrollFrame.Size = UDim2.new(1, 0, 1, 0)
+ScrollFrame.Position = UDim2.new(0, 0, 0, 0)
 ScrollFrame.BackgroundTransparency = 1
 ScrollFrame.BorderSizePixel = 0
 ScrollFrame.ScrollBarThickness = 6
@@ -204,7 +216,7 @@ UIListLayout.Parent = ScrollFrame
 -- 设置面板
 local SettingsFrame = Instance.new("Frame")
 SettingsFrame.Name = "SettingsFrame"
-SettingsFrame.Size = UDim2.new(0, 250, 0, 180)
+SettingsFrame.Size = UDim2.new(0, 250, 0, 200)
 SettingsFrame.Position = UDim2.new(0, 220, 0, 30)
 SettingsFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 SettingsFrame.BackgroundTransparency = 0.3
@@ -229,7 +241,7 @@ SettingsTitle.Name = "SettingsTitle"
 SettingsTitle.Size = UDim2.new(1, -20, 1, 0)
 SettingsTitle.Position = UDim2.new(0, 5, 0, 0)
 SettingsTitle.BackgroundTransparency = 1
-SettingsTitle.Text = "设置 - v3.0"
+SettingsTitle.Text = "设置 - v3.1"
 SettingsTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
 SettingsTitle.TextXAlignment = Enum.TextXAlignment.Left
 SettingsTitle.Font = Enum.Font.SourceSansBold
@@ -250,37 +262,11 @@ CloseSettingsButton.Font = Enum.Font.SourceSansBold
 CloseSettingsButton.TextSize = 12
 CloseSettingsButton.Parent = SettingsTitleBar
 
--- 透明度设置（改为下拉选项）
-local TransparencyLabel = Instance.new("TextLabel")
-TransparencyLabel.Name = "TransparencyLabel"
-TransparencyLabel.Size = UDim2.new(1, -10, 0, 20)
-TransparencyLabel.Position = UDim2.new(0, 5, 0, 30)
-TransparencyLabel.BackgroundTransparency = 1
-TransparencyLabel.Text = "UI透明度: " .. UISettings.Transparency
-TransparencyLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-TransparencyLabel.Font = Enum.Font.SourceSansBold
-TransparencyLabel.TextSize = 12
-TransparencyLabel.TextXAlignment = Enum.TextXAlignment.Left
-TransparencyLabel.Parent = SettingsFrame
-
-local TransparencyDropdown = Instance.new("TextButton")
-TransparencyDropdown.Name = "TransparencyDropdown"
-TransparencyDropdown.Size = UDim2.new(1, -10, 0, 25)
-TransparencyDropdown.Position = UDim2.new(0, 5, 0, 55)
-TransparencyDropdown.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
-TransparencyDropdown.BackgroundTransparency = 0.3
-TransparencyDropdown.BorderSizePixel = 0
-TransparencyDropdown.Text = "选择透明度"
-TransparencyDropdown.TextColor3 = Color3.fromRGB(255, 255, 255)
-TransparencyDropdown.Font = Enum.Font.SourceSans
-TransparencyDropdown.TextSize = 12
-TransparencyDropdown.Parent = SettingsFrame
-
--- 主题设置
+-- 主题设置（放在上面）
 local ThemeLabel = Instance.new("TextLabel")
 ThemeLabel.Name = "ThemeLabel"
 ThemeLabel.Size = UDim2.new(1, -10, 0, 20)
-ThemeLabel.Position = UDim2.new(0, 5, 0, 90)
+ThemeLabel.Position = UDim2.new(0, 5, 0, 30)
 ThemeLabel.BackgroundTransparency = 1
 ThemeLabel.Text = "UI主题颜色:"
 ThemeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -292,7 +278,7 @@ ThemeLabel.Parent = SettingsFrame
 local ThemeButtonsFrame = Instance.new("Frame")
 ThemeButtonsFrame.Name = "ThemeButtonsFrame"
 ThemeButtonsFrame.Size = UDim2.new(1, -10, 0, 30)
-ThemeButtonsFrame.Position = UDim2.new(0, 5, 0, 115)
+ThemeButtonsFrame.Position = UDim2.new(0, 5, 0, 55)
 ThemeButtonsFrame.BackgroundTransparency = 1
 ThemeButtonsFrame.Parent = SettingsFrame
 
@@ -338,6 +324,73 @@ BlackThemeButton.Font = Enum.Font.SourceSans
 BlackThemeButton.TextSize = 12
 BlackThemeButton.Parent = ThemeButtonsFrame
 
+-- 透明度设置（放在下面）
+local TransparencyLabel = Instance.new("TextLabel")
+TransparencyLabel.Name = "TransparencyLabel"
+TransparencyLabel.Size = UDim2.new(1, -10, 0, 20)
+TransparencyLabel.Position = UDim2.new(0, 5, 0, 95)
+TransparencyLabel.BackgroundTransparency = 1
+TransparencyLabel.Text = "UI透明度: " .. UISettings.Transparency
+TransparencyLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TransparencyLabel.Font = Enum.Font.SourceSansBold
+TransparencyLabel.TextSize = 12
+TransparencyLabel.TextXAlignment = Enum.TextXAlignment.Left
+TransparencyLabel.Parent = SettingsFrame
+
+local TransparencyOptionsFrame = Instance.new("Frame")
+TransparencyOptionsFrame.Name = "TransparencyOptionsFrame"
+TransparencyOptionsFrame.Size = UDim2.new(1, -10, 0, 80)
+TransparencyOptionsFrame.Position = UDim2.new(0, 5, 0, 120)
+TransparencyOptionsFrame.BackgroundTransparency = 1
+TransparencyOptionsFrame.Parent = SettingsFrame
+
+-- 创建透明度选项按钮
+local function CreateTransparencyOptions()
+    local yPosition = 0
+    for optionName, transparencyValue in pairs(UISettings.TransparencyOptions) do
+        local optionButton = Instance.new("TextButton")
+        optionButton.Name = optionName .. "Option"
+        optionButton.Size = UDim2.new(1, 0, 0, 18)
+        optionButton.Position = UDim2.new(0, 0, 0, yPosition)
+        optionButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+        optionButton.BackgroundTransparency = 0.3
+        optionButton.BorderSizePixel = 0
+        optionButton.Text = optionName
+        optionButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        optionButton.Font = Enum.Font.SourceSans
+        optionButton.TextSize = 11
+        optionButton.TextXAlignment = Enum.TextXAlignment.Left
+        
+        -- 当前选中的选项高亮
+        if optionName == UISettings.Transparency then
+            optionButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+            optionButton.BackgroundTransparency = 0.2
+        end
+        
+        optionButton.MouseButton1Click:Connect(function()
+            UISettings.Transparency = optionName
+            ApplyUISettings()
+            SaveSettings(UISettings)
+            
+            -- 更新所有选项的高亮状态
+            for _, child in ipairs(TransparencyOptionsFrame:GetChildren()) do
+                if child:IsA("TextButton") then
+                    if child.Text == UISettings.Transparency then
+                        child.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+                        child.BackgroundTransparency = 0.2
+                    else
+                        child.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+                        child.BackgroundTransparency = 0.3
+                    end
+                end
+            end
+        end)
+        
+        optionButton.Parent = TransparencyOptionsFrame
+        yPosition = yPosition + 20
+    end
+end
+
 -- 重置设置按钮
 local ResetSettingsButton = Instance.new("TextButton")
 ResetSettingsButton.Name = "ResetSettingsButton"
@@ -355,7 +408,7 @@ ResetSettingsButton.Parent = SettingsFrame
 -- 脚本信息显示框
 local InfoFrame = Instance.new("Frame")
 InfoFrame.Name = "InfoFrame"
-InfoFrame.Size = UDim2.new(0, 250, 0, 300)
+InfoFrame.Size = UDim2.new(0, 250, 0, 200)
 InfoFrame.Position = UDim2.new(0, 220, 0, 30)
 InfoFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 InfoFrame.BackgroundTransparency = 0.5
@@ -380,7 +433,7 @@ InfoTitle.Name = "InfoTitle"
 InfoTitle.Size = UDim2.new(1, -20, 1, 0)
 InfoTitle.Position = UDim2.new(0, 5, 0, 0)
 InfoTitle.BackgroundTransparency = 1
-InfoTitle.Text = "脚本信息 - v3.0"
+InfoTitle.Text = "脚本信息 - v3.1"
 InfoTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
 InfoTitle.TextXAlignment = Enum.TextXAlignment.Left
 InfoTitle.Font = Enum.Font.SourceSansBold
@@ -401,24 +454,20 @@ CloseInfoButton.Font = Enum.Font.SourceSansBold
 CloseInfoButton.TextSize = 12
 CloseInfoButton.Parent = InfoTitleBar
 
--- 信息内容滚动框架
-local InfoScrollFrame = Instance.new("ScrollingFrame")
-InfoScrollFrame.Name = "InfoScrollFrame"
-InfoScrollFrame.Size = UDim2.new(1, -10, 1, -30)
-InfoScrollFrame.Position = UDim2.new(0, 5, 0, 25)
-InfoScrollFrame.BackgroundTransparency = 1
-InfoScrollFrame.BorderSizePixel = 0
-InfoScrollFrame.ScrollBarThickness = 6
-InfoScrollFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
-InfoScrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
-InfoScrollFrame.Parent = InfoFrame
-
--- 信息内容布局
-local InfoListLayout = Instance.new("UIListLayout")
-InfoListLayout.Name = "InfoListLayout"
-InfoListLayout.Padding = UDim.new(0, 5)
-InfoListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-InfoListLayout.Parent = InfoScrollFrame
+-- 信息内容
+local ScriptInfo = Instance.new("TextLabel")
+ScriptInfo.Name = "ScriptInfo"
+ScriptInfo.Size = UDim2.new(1, -10, 1, -30)
+ScriptInfo.Position = UDim2.new(0, 5, 0, 25)
+ScriptInfo.BackgroundTransparency = 1
+ScriptInfo.Text = "MR脚本集合 v3.1\n\n✨ 新增功能：\n• 设置保存功能\n• 优化透明度选项\n• 重新启动保留设置\n\n🛠️ 使用方法：\n• 点击选项按钮选择设置\n• 设置会自动保存\n• 重启游戏后依然有效"
+ScriptInfo.TextColor3 = Color3.fromRGB(220, 220, 220)
+ScriptInfo.Font = Enum.Font.SourceSans
+ScriptInfo.TextSize = 12
+ScriptInfo.TextWrapped = true
+ScriptInfo.TextXAlignment = Enum.TextXAlignment.Left
+ScriptInfo.TextYAlignment = Enum.TextYAlignment.Top
+ScriptInfo.Parent = InfoFrame
 
 -- UI状态变量
 local IsExpanded = false
@@ -427,34 +476,12 @@ local IsSettingsVisible = false
 local IsDragging = false
 local IsInfoDragging = false
 local IsSettingsDragging = false
-local CurrentCategory = "全部"
 local DragStartPos, InfoDragStartPos, SettingsDragStartPos
 
--- 脚本分类数据
-local ScriptCategories = {
-    {
-        Name = "全部",
-        Color = Color3.fromRGB(100, 100, 100)
-    },
-    {
-        Name = "汉化脚本",
-        Color = Color3.fromRGB(60, 120, 60)
-    },
-    {
-        Name = "通用功能",
-        Color = Color3.fromRGB(60, 100, 150)
-    },
-    {
-        Name = "娱乐脚本",
-        Color = Color3.fromRGB(150, 60, 120)
-    }
-}
-
--- 脚本数据表（按分类组织）
+-- 脚本数据表
 local Scripts = {
     {
         Name = "鲨鱼咬2",
-        Category = "汉化脚本",
         Color = Color3.fromRGB(60, 120, 60),
         LoadFunction = function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/SharkBite2汉化.lua"))()
@@ -462,7 +489,6 @@ local Scripts = {
     },
     {
         Name = "超速射击",
-        Category = "汉化脚本",
         Color = Color3.fromRGB(120, 60, 60),
         LoadFunction = function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/Hypershot汉化.lua"))()
@@ -470,7 +496,6 @@ local Scripts = {
     },
     {
         Name = "墨水游戏",
-        Category = "汉化脚本",
         Color = Color3.fromRGB(80, 60, 120),
         LoadFunction = function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/墨水汉化.lua"))()
@@ -478,36 +503,11 @@ local Scripts = {
     },
     {
         Name = "通用飞行",
-        Category = "通用功能",
         Color = Color3.fromRGB(60, 100, 150),
         LoadFunction = function()
             loadstring("\108\111\97\100\115\116\114\105\110\103\40\103\97\109\101\58\72\116\116\112\71\101\116\40\34\104\116\116\112\115\58\47\47\112\97\115\116\101\98\105\110\46\99\111\109\47\114\97\119\47\90\66\122\99\84\109\49\102\34\41\41\40\41\10")()
         end
-    },
-    {
-        Name = "速度提升",
-        Category = "工具功能",
-        Color = Color3.fromRGB(80, 150, 80),
-        LoadFunction = function()
-            -- 示例脚本
-            print("速度提升脚本加载")
-        end
     }
-}
-
--- 信息内容数据
-local InfoContents = {
-    "🎯 MR脚本集合 v3.999",
-    "✨ 新增功能：",
-    "• 分类系统（游戏增强、工具功能等）",
-    "• 分类选项卡切换",
-    "• 透明度选项设置",
-    "• 更好的脚本组织",
-    "",
-    "🛠️ 使用方法：",
-    "• 点击分类选项卡切换视图",
-    "• 使用设置面板调整外观",
-    "• 选择适合的透明度级别"
 }
 
 -- 应用UI设置
@@ -519,7 +519,6 @@ local function ApplyUISettings()
     MainContainer.BackgroundTransparency = transparency
     TitleBar.BackgroundTransparency = transparency
     ContentFrame.BackgroundTransparency = transparency
-    SettingsFrame.BackgroundTransparency = 0.3 -- 设置面板固定透明度
     
     -- 应用颜色主题
     MainContainer.BackgroundColor3 = theme.MainColor
@@ -528,70 +527,6 @@ local function ApplyUISettings()
     
     -- 更新透明度标签
     TransparencyLabel.Text = "UI透明度: " .. UISettings.Transparency
-end
-
--- 创建分类选项卡
-local function CreateCategoryTabs()
-    for i, category in ipairs(ScriptCategories) do
-        local tabButton = Instance.new("TextButton")
-        tabButton.Name = category.Name .. "Tab"
-        tabButton.Size = UDim2.new(0, 80, 0, 25)
-        tabButton.BackgroundColor3 = category.Color
-        tabButton.BackgroundTransparency = 0.3
-        tabButton.BorderSizePixel = 0
-        tabButton.Text = category.Name
-        tabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-        tabButton.Font = Enum.Font.SourceSansBold
-        tabButton.TextSize = 12
-        tabButton.LayoutOrder = i
-        
-        -- 当前选中的分类高亮
-        if category.Name == CurrentCategory then
-            tabButton.BackgroundTransparency = 0.1
-        end
-        
-        tabButton.MouseButton1Click:Connect(function()
-            CurrentCategory = category.Name
-            FilterScriptsByCategory()
-            -- 更新所有选项卡的高亮状态
-            for _, tab in ipairs(TabContainer:GetChildren()) do
-                if tab:IsA("TextButton") then
-                    if tab.Text == CurrentCategory then
-                        tab.BackgroundTransparency = 0.1
-                    else
-                        tab.BackgroundTransparency = 0.3
-                    end
-                end
-            end
-        end)
-        
-        tabButton.Parent = TabContainer
-    end
-end
-
--- 根据分类过滤脚本
-local function FilterScriptsByCategory()
-    for _, child in ipairs(ScrollFrame:GetChildren()) do
-        if child:IsA("TextButton") and child.Name:find("Button") then
-            if CurrentCategory == "全部" then
-                child.Visible = true
-            else
-                local scriptName = child.Name:gsub("Button", "")
-                local scriptData = nil
-                for _, script in ipairs(Scripts) do
-                    if script.Name == scriptName then
-                        scriptData = script
-                        break
-                    end
-                end
-                if scriptData and scriptData.Category == CurrentCategory then
-                    child.Visible = true
-                else
-                    child.Visible = false
-                end
-            end
-        end
-    end
 end
 
 -- 创建脚本按钮
@@ -624,58 +559,10 @@ local function CreateScriptButtons()
     end
 end
 
--- 创建信息内容
-local function CreateInfoContent()
-    for i, content in ipairs(InfoContents) do
-        local textLabel = Instance.new("TextLabel")
-        textLabel.Name = "InfoLine" .. i
-        textLabel.Size = UDim2.new(1, 0, 0, 20)
-        textLabel.BackgroundTransparency = 1
-        textLabel.Text = content
-        textLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
-        textLabel.Font = Enum.Font.SourceSans
-        textLabel.TextSize = 12
-        textLabel.TextXAlignment = Enum.TextXAlignment.Left
-        textLabel.TextWrapped = true
-        textLabel.LayoutOrder = i
-        textLabel.AutomaticSize = Enum.AutomaticSize.Y
-        
-        if content:find("🎯") or content:find("✨") or content:find("🛠️") then
-            textLabel.TextColor3 = Color3.fromRGB(255, 255, 150)
-            textLabel.Font = Enum.Font.SourceSansBold
-        elseif content:find("•") then
-            textLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-            textLabel.Position = UDim2.new(0, 10, 0, 0)
-        elseif content == "" then
-            textLabel.Size = UDim2.new(1, 0, 0, 10)
-            textLabel.Text = ""
-        end
-        
-        textLabel.Parent = InfoScrollFrame
-    end
-end
-
 -- 更新滚动框架大小
 local function UpdateScrollSize()
-    local visibleCount = 0
-    for _, child in ipairs(ScrollFrame:GetChildren()) do
-        if child:IsA("TextButton") and child.Visible then
-            visibleCount = visibleCount + 1
-        end
-    end
-    local totalHeight = visibleCount * 35 + (visibleCount - 1) * 5 + 10
+    local totalHeight = #Scripts * 35 + (#Scripts - 1) * 5 + 10
     ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
-end
-
--- 更新信息滚动框架大小
-local function UpdateInfoScrollSize()
-    local totalHeight = 0
-    for _, child in ipairs(InfoScrollFrame:GetChildren()) do
-        if child:IsA("TextLabel") then
-            totalHeight = totalHeight + child.AbsoluteSize.Y + 5
-        end
-    end
-    InfoScrollFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
 end
 
 -- 切换设置显示
@@ -708,21 +595,19 @@ local function ToggleUI()
     
     if IsExpanded then
         ToggleButton.Text = "-"
-        local contentHeight = math.min(#Scripts * 35 + (#Scripts) * 5 + 40, 280) -- 增加分类选项卡高度
+        local contentHeight = math.min(#Scripts * 35 + (#Scripts) * 5 + 10, 250)
         MainContainer.Size = UDim2.new(0, 200, 0, contentHeight + 40)
         ContentFrame.Size = UDim2.new(1, 0, 0, contentHeight)
         ScrollFrame.Visible = true
-        TabContainer.Visible = true
         
-        -- 显示当前分类的脚本
-        FilterScriptsByCategory()
-        UpdateScrollSize()
+        for _, child in ipairs(ScrollFrame:GetChildren()) do
+            if child:IsA("TextButton") then child.Visible = true end
+        end
     else
         ToggleButton.Text = "+"
         MainContainer.Size = UDim2.new(0, 150, 0, 40)
         ContentFrame.Size = UDim2.new(1, 0, 0, 0)
         ScrollFrame.Visible = false
-        TabContainer.Visible = false
     end
 end
 
@@ -734,54 +619,17 @@ end
 
 -- 重置设置
 local function ResetSettings()
-    UISettings.Transparency = "中等"
     UISettings.Theme = "default"
+    UISettings.Transparency = "中等"
     ApplyUISettings()
+    SaveSettings(UISettings)
     print("设置已重置为默认值")
-end
-
--- 显示透明度选项
-local function ShowTransparencyOptions()
-    local optionsFrame = Instance.new("Frame")
-    optionsFrame.Name = "TransparencyOptions"
-    optionsFrame.Size = UDim2.new(1, 0, 0, 100)
-    optionsFrame.Position = UDim2.new(0, 0, 1, 0)
-    optionsFrame.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-    optionsFrame.BorderSizePixel = 0
-    optionsFrame.Parent = TransparencyDropdown
     
-    local optionsLayout = Instance.new("UIListLayout")
-    optionsLayout.Parent = optionsFrame
-    
-    for optionName, transparencyValue in pairs(UISettings.TransparencyOptions) do
-        local optionButton = Instance.new("TextButton")
-        optionButton.Size = UDim2.new(1, 0, 0, 25)
-        optionButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
-        optionButton.BorderSizePixel = 0
-        optionButton.Text = optionName
-        optionButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-        optionButton.Font = Enum.Font.SourceSans
-        optionButton.TextSize = 12
-        
-        optionButton.MouseButton1Click:Connect(function()
-            UISettings.Transparency = optionName
-            ApplyUISettings()
-            optionsFrame:Destroy()
-        end)
-        
-        optionButton.Parent = optionsFrame
+    -- 重新创建透明度选项以更新高亮状态
+    for _, child in ipairs(TransparencyOptionsFrame:GetChildren()) do
+        child:Destroy()
     end
-    
-    -- 点击外部关闭选项
-    local function closeOptions(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            if not optionsFrame:IsDescendantOf(TransparencyDropdown) then
-                optionsFrame:Destroy()
-            end
-        end
-    end
-    
-    game:GetService("UserInputService").InputBegan:Connect(closeOptions)
+    CreateTransparencyOptions()
 end
 
 -- 处理拖动事件
@@ -803,11 +651,9 @@ local function SetupDragging(frame, dragFlag, startPosFlag)
 end
 
 -- 初始化
-CreateCategoryTabs()
 CreateScriptButtons()
-CreateInfoContent()
+CreateTransparencyOptions()
 UpdateScrollSize()
-UpdateInfoScrollSize()
 ApplyUISettings()
 
 -- 设置拖动
@@ -822,22 +668,24 @@ InfoButton.MouseButton1Click:Connect(ToggleInfo)
 SettingsButton.MouseButton1Click:Connect(ToggleSettings)
 CloseInfoButton.MouseButton1Click:Connect(function() InfoFrame.Visible = false end)
 CloseSettingsButton.MouseButton1Click:Connect(function() SettingsFrame.Visible = false end)
-TransparencyDropdown.MouseButton1Click:Connect(ShowTransparencyOptions)
 
 -- 主题按钮点击
 DefaultThemeButton.MouseButton1Click:Connect(function()
     UISettings.Theme = "default"
     ApplyUISettings()
+    SaveSettings(UISettings)
 end)
 
 WhiteThemeButton.MouseButton1Click:Connect(function()
     UISettings.Theme = "white"
     ApplyUISettings()
+    SaveSettings(UISettings)
 end)
 
 BlackThemeButton.MouseButton1Click:Connect(function()
     UISettings.Theme = "black"
     ApplyUISettings()
+    SaveSettings(UISettings)
 end)
 
 ResetSettingsButton.MouseButton1Click:Connect(ResetSettings)
@@ -864,11 +712,9 @@ end)
 
 -- 布局变化时更新滚动大小
 UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(UpdateScrollSize)
-InfoListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(UpdateInfoScrollSize)
 
 -- 初始化UI
-print("MR脚本UI v3.0 已加载！")
-print("新增分类系统：游戏增强、工具功能、娱乐脚本")
-print("使用分类选项卡组织脚本")
-print("透明度设置改为选项形式")
-print("点击分类名称切换视图")
+print("MR脚本UI v3.1 已加载！")
+print("设置已自动加载：主题=" .. UISettings.Theme .. ", 透明度=" .. UISettings.Transparency)
+print("设置会自动保存，重启游戏后依然有效")
+print("点击⚙️按钮打开设置面板")
