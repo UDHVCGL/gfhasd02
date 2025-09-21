@@ -1,0 +1,45 @@
+-- 在您的脚本开头添加
+local KeySystem = loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/MR中心v1"))()
+
+-- 检查权限
+if not KeySystem.CheckAccess() then
+    return  -- 没有权限，停止执行
+end
+
+-- 继续执行您的脚本...
+
+-- 生成单个卡密
+local newKey = MRKeySystem.GenerateKey("VIP", 30, 100)
+print("新卡密: " .. newKey)
+
+-- 批量生成
+local batchKeys = MRKeySystem.GenerateBatchKeys(10, "TEST", 7, 50)
+for i, key in ipairs(batchKeys) do
+    print(i .. ". " .. key)
+end
+
+-- 查看卡密信息
+MRKeySystem.ShowKeyInfo("MR2024-VIP-8888")
+
+-- 添加黑名单
+MRKeySystem.AddToBlacklist(123456, "测试黑名单")
+
+-- 获取所有卡密状态
+local allKeys = MRKeySystem.GetAllKeysInfo()
+
+MRKeySystem.KeysDatabase = {
+    ["MR2024-VIP-8888"] = {
+        created = os.time(),
+        expires = os.time() + (30 * 24 * 3600),  -- 30天
+        maxUses = 100,  -- 100人使用
+        usedCount = 0,
+        users = {}
+    }
+    -- 可以添加更多卡密...
+}
+
+MRKeySystem.Config = {
+    MaxAttempts = 5,      -- 最大尝试次数
+    KickOnInvalid = false,-- 是否踢出
+    SaveToFile = true     -- 保存记录
+}
