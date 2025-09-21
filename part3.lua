@@ -48,7 +48,7 @@ local Scripts = {
         Name = "刀刃球",
         Color = Color3.fromRGB(60, 100, 50),
         LoadFunction = function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/刀刃球MR汉化.lua"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/MRE65855.lua"))()
         end
     },
 
