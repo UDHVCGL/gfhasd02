@@ -1,0 +1,386 @@
+-- MR脚本 UI界面
+-- 基于WindUI配置转换
+-- 版本：1.0
+
+local Player = game:GetService("Players").LocalPlayer
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local CoreGui = game:GetService("CoreGui")
+local HttpService = game:GetService("HttpService")
+
+-- 创建主UI
+local MRGui = Instance.new("ScreenGui")
+MRGui.Name = "MySuperHub"
+MRGui.Parent = CoreGui
+MRGui.ResetOnSpawn = false
+MRGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+-- 主窗口
+local MainWindow = Instance.new("Frame")
+MainWindow.Name = "MainWindow"
+MainWindow.Size = UDim2.fromOffset(580, 460)
+MainWindow.Position = UDim2.new(0.5, -290, 0.5, -230)
+MainWindow.AnchorPoint = Vector2.new(0.5, 0.5)
+MainWindow.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+MainWindow.BackgroundTransparency = 0.1
+MainWindow.BorderSizePixel = 0
+MainWindow.Active = true
+MainWindow.Draggable = true
+MainWindow.Parent = MRGui
+
+-- 标题栏
+local TitleBar = Instance.new("Frame")
+TitleBar.Name = "TitleBar"
+TitleBar.Size = UDim2.new(1, 0, 0, 40)
+TitleBar.Position = UDim2.new(0, 0, 0, 0)
+TitleBar.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+TitleBar.BackgroundTransparency = 0.1
+TitleBar.BorderSizePixel = 0
+TitleBar.Parent = MainWindow
+
+-- 标题文本
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Name = "TitleLabel"
+TitleLabel.Size = UDim2.new(0, 200, 1, 0)
+TitleLabel.Position = UDim2.new(0, 50, 0, 0)
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.Text = "My Super Hub"
+TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleLabel.Font = Enum.Font.SourceSansBold
+TitleLabel.TextSize = 16
+TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+TitleLabel.Parent = TitleBar
+
+-- 作者信息
+local AuthorLabel = Instance.new("TextLabel")
+AuthorLabel.Name = "AuthorLabel"
+AuthorLabel.Size = UDim2.new(0, 150, 1, 0)
+AuthorLabel.Position = UDim2.new(1, -160, 0, 0)
+AuthorLabel.BackgroundTransparency = 1
+AuthorLabel.Text = "by .ftgs and .ftgs"
+AuthorLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
+AuthorLabel.Font = Enum.Font.SourceSans
+AuthorLabel.TextSize = 12
+AuthorLabel.TextXAlignment = Enum.TextXAlignment.Right
+AuthorLabel.Parent = TitleBar
+
+-- 侧边栏
+local SideBar = Instance.new("Frame")
+SideBar.Name = "SideBar"
+SideBar.Size = UDim2.new(0, 200, 1, -40)
+SideBar.Position = UDim2.new(0, 0, 0, 40)
+SideBar.BackgroundColor3 = Color3.fromRGB(28, 28, 33)
+SideBar.BackgroundTransparency = 0.1
+SideBar.BorderSizePixel = 0
+SideBar.Parent = MainWindow
+
+-- 用户信息区域
+local UserSection = Instance.new("Frame")
+UserSection.Name = "UserSection"
+UserSection.Size = UDim2.new(1, 0, 0, 80)
+UserSection.Position = UDim2.new(0, 0, 0, 0)
+UserSection.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+UserSection.BackgroundTransparency = 0.1
+UserSection.BorderSizePixel = 0
+UserSection.Parent = SideBar
+
+local UserAvatar = Instance.new("ImageLabel")
+UserAvatar.Name = "UserAvatar"
+UserAvatar.Size = UDim2.new(0, 50, 0, 50)
+UserAvatar.Position = UDim2.new(0.5, -25, 0, 15)
+UserAvatar.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+UserAvatar.BackgroundTransparency = 0.5
+UserAvatar.BorderSizePixel = 0
+UserAvatar.Image = "rbxassetid://0" -- 默认头像
+UserAvatar.Parent = UserSection
+
+local UserName = Instance.new("TextLabel")
+UserName.Name = "UserName"
+UserName.Size = UDim2.new(1, -20, 0, 20)
+UserName.Position = UDim2.new(0, 10, 0, 70)
+UserName.BackgroundTransparency = 1
+UserName.Text = "匿名用户"
+UserName.TextColor3 = Color3.fromRGB(255, 255, 255)
+UserName.Font = Enum.Font.SourceSansBold
+UserName.TextSize = 14
+UserName.TextXAlignment = Enum.TextXAlignment.Center
+UserName.Parent = UserSection
+
+-- 脚本列表区域
+local ScriptsList = Instance.new("ScrollingFrame")
+ScriptsList.Name = "ScriptsList"
+ScriptsList.Size = UDim2.new(1, 0, 1, -80)
+ScriptsList.Position = UDim2.new(0, 0, 0, 80)
+ScriptsList.BackgroundTransparency = 1
+ScriptsList.BorderSizePixel = 0
+ScriptsList.ScrollBarThickness = 6
+ScriptsList.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
+ScriptsList.CanvasSize = UDim2.new(0, 0, 0, 0)
+ScriptsList.Parent = SideBar
+
+local ScriptsLayout = Instance.new("UIListLayout")
+ScriptsLayout.Name = "ScriptsLayout"
+ScriptsLayout.Padding = UDim.new(0, 5)
+ScriptsLayout.SortOrder = Enum.SortOrder.LayoutOrder
+ScriptsLayout.Parent = ScriptsList
+
+-- 内容区域
+local ContentFrame = Instance.new("Frame")
+ContentFrame.Name = "ContentFrame"
+ContentFrame.Size = UDim2.new(1, -200, 1, -40)
+ContentFrame.Position = UDim2.new(0, 200, 0, 40)
+ContentFrame.BackgroundColor3 = Color3.fromRGB(32, 32, 37)
+ContentFrame.BackgroundTransparency = 0.1
+ContentFrame.BorderSizePixel = 0
+ContentFrame.Parent = MainWindow
+
+-- 关闭按钮
+local CloseButton = Instance.new("TextButton")
+CloseButton.Name = "CloseButton"
+CloseButton.Size = UDim2.new(0, 30, 0, 30)
+CloseButton.Position = UDim2.new(1, -35, 0, 5)
+CloseButton.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
+CloseButton.BackgroundTransparency = 0.2
+CloseButton.BorderSizePixel = 0
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.Font = Enum.Font.SourceSansBold
+CloseButton.TextSize = 14
+CloseButton.Parent = TitleBar
+
+-- 最小化按钮
+local MinimizeButton = Instance.new("TextButton")
+MinimizeButton.Name = "MinimizeButton"
+MinimizeButton.Size = UDim2.new(0, 30, 0, 30)
+MinimizeButton.Position = UDim2.new(1, -70, 0, 5)
+MinimizeButton.BackgroundColor3 = Color3.fromRGB(80, 80, 90)
+MinimizeButton.BackgroundTransparency = 0.2
+MinimizeButton.BorderSizePixel = 0
+MinimizeButton.Text = "_"
+MinimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+MinimizeButton.Font = Enum.Font.SourceSansBold
+MinimizeButton.TextSize = 14
+MinimizeButton.Parent = TitleBar
+
+-- 卡密系统界面
+local KeySystemFrame = Instance.new("Frame")
+KeySystemFrame.Name = "KeySystemFrame"
+KeySystemFrame.Size = UDim2.new(0, 400, 0, 300)
+KeySystemFrame.Position = UDim2.new(0.5, -200, 0.5, -150)
+KeySystemFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+KeySystemFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+KeySystemFrame.BackgroundTransparency = 0.1
+KeySystemFrame.BorderSizePixel = 0
+KeySystemFrame.Visible = false
+KeySystemFrame.Parent = MRGui
+
+local KeyTitle = Instance.new("TextLabel")
+KeyTitle.Name = "KeyTitle"
+KeyTitle.Size = UDim2.new(1, 0, 0, 50)
+KeyTitle.Position = UDim2.new(0, 0, 0, 0)
+KeyTitle.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+KeyTitle.BackgroundTransparency = 0.1
+KeyTitle.BorderSizePixel = 0
+KeyTitle.Text = "卡密验证系统"
+KeyTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+KeyTitle.Font = Enum.Font.SourceSansBold
+KeyTitle.TextSize = 18
+KeyTitle.Parent = KeySystemFrame
+
+local KeyInput = Instance.new("TextBox")
+KeyInput.Name = "KeyInput"
+KeyInput.Size = UDim2.new(0.8, 0, 0, 40)
+KeyInput.Position = UDim2.new(0.1, 0, 0.3, 0)
+KeyInput.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
+KeyInput.BackgroundTransparency = 0.1
+KeyInput.BorderSizePixel = 0
+KeyInput.Text = ""
+KeyInput.PlaceholderText = "请输入卡密..."
+KeyInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+KeyInput.Font = Enum.Font.SourceSans
+KeyInput.TextSize = 14
+KeyInput.Parent = KeySystemFrame
+
+local ActivateButton = Instance.new("TextButton")
+ActivateButton.Name = "ActivateButton"
+ActivateButton.Size = UDim2.new(0.6, 0, 0, 40)
+ActivateButton.Position = UDim2.new(0.2, 0, 0.5, 0)
+ActivateButton.BackgroundColor3 = Color3.fromRGB(60, 120, 60)
+ActivateButton.BackgroundTransparency = 0.1
+ActivateButton.BorderSizePixel = 0
+ActivateButton.Text = "激活"
+ActivateButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ActivateButton.Font = Enum.Font.SourceSansBold
+ActivateButton.TextSize = 14
+ActivateButton.Parent = KeySystemFrame
+
+local KeyNote = Instance.new("TextLabel")
+KeyNote.Name = "KeyNote"
+KeyNote.Size = UDim2.new(0.8, 0, 0, 40)
+KeyNote.Position = UDim2.new(0.1, 0, 0.7, 0)
+KeyNote.BackgroundTransparency = 1
+KeyNote.Text = "Example Key System."
+KeyNote.TextColor3 = Color3.fromRGB(200, 200, 200)
+KeyNote.Font = Enum.Font.SourceSans
+KeyNote.TextSize = 12
+KeyNote.TextWrapped = true
+KeyNote.Parent = KeySystemFrame
+
+-- 脚本数据
+local Scripts = {
+    {
+        Name = "鲨鱼咬2",
+        Category = "游戏",
+        Color = Color3.fromRGB(60, 120, 60),
+        LoadFunction = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/SharkBite2汉化.lua"))()
+        end
+    },
+    {
+        Name = "超速射击",
+        Category = "游戏",
+        Color = Color3.fromRGB(120, 60, 60),
+        LoadFunction = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/Hypershot汉化.lua"))()
+        end
+    },
+    {
+        Name = "通用飞行",
+        Category = "工具",
+        Color = Color3.fromRGB(60, 100, 150),
+        LoadFunction = function()
+            loadstring("\108\111\97\100\115\116\114\105\110\103\40\103\97\109\101\58\72\116\116\112\71\101\116\40\34\104\116\116\112\115\58\47\47\112\97\115\116\101\98\105\110\46\99\111\109\47\114\97\119\47\90\66\122\99\84\109\49\102\34\41\41\40\41\10")()
+        end
+    }
+}
+
+-- 卡密系统
+local KeySystem = {
+    Enabled = true,
+    ValidKeys = {"1234", "5678"},
+    Activated = false
+}
+
+-- 创建脚本按钮
+local function CreateScriptButtons()
+    for i, scriptData in ipairs(Scripts) do
+        local scriptButton = Instance.new("TextButton")
+        scriptButton.Name = scriptData.Name .. "Button"
+        scriptButton.Size = UDim2.new(1, -10, 0, 40)
+        scriptButton.Position = UDim2.new(0, 5, 0, (i-1)*45)
+        scriptButton.BackgroundColor3 = scriptData.Color
+        scriptButton.BackgroundTransparency = 0.2
+        scriptButton.BorderSizePixel = 0
+        scriptButton.Text = scriptData.Name
+        scriptButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        scriptButton.Font = Enum.Font.SourceSansBold
+        scriptButton.TextSize = 14
+        scriptButton.LayoutOrder = i
+        
+        scriptButton.MouseButton1Click:Connect(function()
+            if KeySystem.Enabled and not KeySystem.Activated then
+                KeySystemFrame.Visible = true
+                return
+            end
+            
+            local oldText = scriptButton.Text
+            scriptButton.Text = "加载中..."
+            pcall(scriptData.LoadFunction)
+            delay(2, function()
+                if scriptButton then
+                    scriptButton.Text = oldText
+                end
+            end)
+        end)
+        
+        scriptButton.Parent = ScriptsList
+    end
+end
+
+-- 卡密验证
+local function ValidateKey(key)
+    for _, validKey in ipairs(KeySystem.ValidKeys) do
+        if key == validKey then
+            return true
+        end
+    end
+    return false
+end
+
+-- 激活脚本
+local function ActivateScript()
+    KeySystem.Activated = true
+    KeySystemFrame.Visible = false
+    print("卡密验证成功！脚本已激活")
+end
+
+-- 初始化
+CreateScriptButtons()
+
+-- 更新滚动区域大小
+ScriptsLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    ScriptsList.CanvasSize = UDim2.new(0, 0, 0, ScriptsLayout.AbsoluteContentSize.Y)
+end)
+
+-- 按钮事件
+CloseButton.MouseButton1Click:Connect(function()
+    MRGui:Destroy()
+end)
+
+MinimizeButton.MouseButton1Click:Connect(function()
+    MainWindow.Visible = not MainWindow.Visible
+end)
+
+ActivateButton.MouseButton1Click:Connect(function()
+    local key = KeyInput.Text
+    if ValidateKey(key) then
+        ActivateScript()
+    else
+        KeyInput.Text = ""
+        KeyInput.PlaceholderText = "卡密无效，请重试..."
+    end
+end)
+
+-- 用户信息点击
+UserSection.MouseButton1Click:Connect(function()
+    print("用户信息被点击")
+end)
+
+-- 拖拽功能
+local dragging = false
+local dragStartPos
+
+TitleBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStartPos = Vector2.new(input.Position.X, input.Position.Y)
+        MainWindow.Draggable = false
+    end
+end)
+
+TitleBar.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+        MainWindow.Draggable = true
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = Vector2.new(input.Position.X, input.Position.Y) - dragStartPos
+        MainWindow.Position = UDim2.new(
+            0, MainWindow.Position.X.Offset + delta.X,
+            0, MainWindow.Position.Y.Offset + delta.Y
+        )
+        dragStartPos = Vector2.new(input.Position.X, input.Position.Y)
+    end
+end)
+
+print("My Super Hub UI 已加载！")
+print("作者: .ftgs and .ftgs")
+print("使用卡密系统: " .. tostring(KeySystem.Enabled))
+
+-- 显示卡密系统（如果启用）
+if KeySystem.Enabled and not KeySystem.Activated then
+    KeySystemFrame.Visible = true
+end
