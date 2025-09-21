@@ -43,17 +43,25 @@ local Scripts = {
         LoadFunction = function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/死铁轨汉化.lua"))()
         end
-    }
+    },
+    {
+        Name = "刀刃球",
+        Color = Color3.fromRGB(60, 100, 50),
+        LoadFunction = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/刀刃球MR汉化.lua"))()
+        end
+    },
+
 }
 
 -- 信息内容数据
 local InfoContents = {
     "🎯 MR脚本中心 正式版v1",
-    "✨ v2更新公告：",
-    "• 更新服务器死铁轨",
+    "✨ v3更新公告：",
+    "• 更新服务器刀刃球",
     "• 不定期更新",
-    "• 后续更新:被遗弃，刀刃球，起床战争",
-    "• 更新时间:2025/9/21",
+    "• 后续更新:被遗弃,bf,起床战争,跳跃对决,99夜",
+    "• 更新时间:2025/9/22",
     "",
     "💎 重要信息：",
     "• MR脚本创始人:MR",
