@@ -51,17 +51,23 @@ local Scripts = {
             loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/MRE65855.lua"))()
         end
     },
-
+    {
+        Name = "99夜",
+        Color = Color3.fromRGB(60, 60, 50),
+        LoadFunction = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/99夜H4xs.lua"))()
+        end
+    }
 }
 
 -- 信息内容数据
 local InfoContents = {
     "🎯 MR脚本中心 正式版v1",
-    "✨ v3更新公告：",
-    "• 更新服务器刀刃球",
+    "✨ v4更新公告：",
+    "• 更新服务器99夜",
     "• 不定期更新",
-    "• 后续更新:被遗弃,bf,起床战争,跳跃对决,99夜",
-    "• 更新时间:2025/9/22",
+    "• 后续更新:被遗弃,bf,起床战争,跳跃对决",
+    "• 更新时间:2025/9/24",
     "",
     "💎 重要信息：",
     "• MR脚本创始人:MR",
