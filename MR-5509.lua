@@ -15,8 +15,8 @@ local Toggles = Library.Toggles
 Library.ShowToggleFrameInKeybinds = true 
 
 local Window = Library:CreateWindow({
-    Title = "Xi Pro丨终极战场",
-    Footer = "by Xi Taem",
+    Title = "MR丨终极战场",
+    Footer = "by MR",
     Icon = 88686191977617,
     NotifySide = "Right",
     ShowCustomCursor = true,
