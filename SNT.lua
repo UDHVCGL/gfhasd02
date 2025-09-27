@@ -211,6 +211,8 @@ local Translations = {
 ["Auto use Pizza Delivery for c00lkidd"] = "c00lkidd 自动使用披萨递送",
 ["Auto 404 Error"] = "自动 404 错误",
 ["Auto use 404 Error for John Doe"] = "John Doe 自动使用 404 错误",
+["Forsaken"] = "汉化作者MR｜425695367｜禁止倒卖-倒卖全死",
+["SNT HUB"] = "SNT被遗弃 MR汉化",
 }
 
 local function translateText(text)
