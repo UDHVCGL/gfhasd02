@@ -975,8 +975,59 @@ local function showGameList(screenGui, mainContainer, background, list_game)
         end
     end)
     
-    -- 使用 Raw 直链加载脚本（修改这一行）
-    loadstring(GetAsset('https://raw.githubusercontent.com/UDHVCGL/gfhasd02/main/'..gameButton.Text..".lua"))()
+    gameButton.Activated:Connect(function()
+    local closeInfo = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+    local scaleTween = TweenService:Create(mainContainer, closeInfo, {
+        Size = UDim2.new(0, 0, 0, 0),
+        Position = UDim2.new(0.5, 0, 0.5, 0)
+    })
+    local backgroundTween = TweenService:Create(background, closeInfo, {
+        BackgroundTransparency = 1
+    })
+    scaleTween:Play()
+    backgroundTween:Play()
+    scaleTween.Completed:Connect(function()
+        if screenGui and screenGui.Parent then
+            screenGui:Destroy()
+        end
+    end)
+    spawn(function()
+        wait(0.5)
+        if screenGui and screenGui.Parent then
+            screenGui:Destroy()
+        end
+    end)
+    
+    -- ========== 修改从这里开始 ==========
+    -- 游戏名称到脚本链接的映射表
+    local scriptMap = {
+        ["被遗弃"] = "https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/SNT被遗弃.lua",
+        ["99夜"] = "https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/99夜.lua",
+        ["鲨鱼咬2"] = "https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/鲨鱼咬2.lua",
+        ["超速射击"] = "https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/Hypershot汉化.lua"))()",
+        ["墨水游戏"] = "https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/墨水游戏.lua",
+        ["死铁轨"] = "https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/死铁轨.lua",
+        ["刀刃球"] = "https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/刀刃球.lua",
+        ["战争大亨"] = "https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/战争大亨.lua",
+        ["Doors"] = "https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/Doors.lua"
+    }
+    
+    local scriptUrl = scriptMap[gameButton.Text]
+    
+    if scriptUrl then
+        print("正在加载脚本: " .. gameButton.Text)
+        print("脚本链接: " .. scriptUrl)
+        
+        local success, errorMessage = pcall(function()
+            loadstring(game:HttpGet(scriptUrl))()
+        end)
+        
+        if not success then
+            warn("加载脚本失败: " .. errorMessage)
+        end
+    else
+        warn("未找到游戏对应的脚本: " .. gameButton.Text)
+    end
 end)
 
         local function handleHover()
@@ -1604,6 +1655,7 @@ end)
 
 
 CreateSupportList(name)
+
 
 
 
