@@ -106,24 +106,17 @@ local function createParticle(parent)
     end)
 end
 
-local function GetAsset(v)
-    local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-    return game:GetService("HttpService"):JSONDecode(request({
-        Url = v,
-        Headers = {
-            Authorization = "Bearer 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"
-        }
-    }).Body).content:gsub('[^'..b..'=]', ''):gsub('.', function(x)
-        if (x == '=') then return '' end
-        local r,f='',(b:find(x)-1)
-        for i=6,1,-1 do r=r..(f%2^i-f%2^(i-1)>0 and '1' or '0') end
-        return r;
-    end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
-        if (#x ~= 8) then return '' end
-        local c=0
-        for i=1,8 do c=c+(x:sub(i,i)=='1' and 2^(8-i) or 0) end
-        return string.char(c)
-    end)
+local function GetAsset(url)
+    local response = request({
+        Url = url,
+        Method = "GET"
+    })
+    
+    if response.StatusCode == 200 then
+        return response.Body
+    else
+        error("获取脚本失败: " .. response.StatusCode)
+    end
 end
 
 local function showLoadingAnimation(onComplete)
@@ -966,30 +959,25 @@ local function showGameList(screenGui, mainContainer, background, list_game)
         dotGlow.Parent = statusDot
 
         gameButton.Activated:Connect(function()
-            local closeInfo = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In)
-            local scaleTween = TweenService:Create(mainContainer, closeInfo, {
-                Size = UDim2.new(0, 0, 0, 0),
-                Position = UDim2.new(0.5, 0, 0.5, 0)
-            })
-            local backgroundTween = TweenService:Create(background, closeInfo, {
-                BackgroundTransparency = 1
-            })
-            scaleTween:Play()
-            backgroundTween:Play()
-            scaleTween.Completed:Connect(function()
-                if screenGui and screenGui.Parent then
-                    screenGui:Destroy()
-                end
-            end)
-            spawn(function()
-                wait(0.5)
-                if screenGui and screenGui.Parent then
-                    screenGui:Destroy()
-                end
-            end)
-            loadstring(GetAsset('https://api.github.com/repos/UDHVCGL/gfhasd02/contents/'..gameButton.Text..".lua"))()
-        end)
-
+    local closeInfo = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+    local scaleTween = TweenService:Create(mainContainer, closeInfo, {
+        Size = UDim2.new(0, 0, 0, 0),
+        Position = UDim2.new(0.5, 0, 0.5, 0)
+    })
+    local backgroundTween = TweenService:Create(background, closeInfo, {
+        BackgroundTransparency = 1
+    })
+    scaleTween:Play()
+    backgroundTween:Play()
+    scaleTween.Completed:Connect(function()
+        if screenGui and screenGui.Parent then
+            screenGui:Destroy()
+        end
+    end)
+    
+    -- 使用 Raw 直链加载脚本（修改这一行）
+    loadstring(GetAsset('https://raw.githubusercontent.com/UDHVCGL/gfhasd02/main/'..gameButton.Text..".lua"))()
+end)
 
         local function handleHover()
             local hoverInfo = TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
@@ -1616,6 +1604,7 @@ end)
 
 
 CreateSupportList(name)
+
 
 
 
