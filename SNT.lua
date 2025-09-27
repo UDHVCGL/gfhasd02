@@ -1,4 +1,5 @@
 local Translations = {
+    ["Low performance"] = "MR汉化 禁倒卖 425695367",
     ["Noclip"] = "穿墙",
     ["Infinite Jump"] = "无限跳跃",
     ["Fly"] = "飞行",
@@ -211,8 +212,6 @@ local Translations = {
 ["Auto use Pizza Delivery for c00lkidd"] = "c00lkidd 自动使用披萨递送",
 ["Auto 404 Error"] = "自动 404 错误",
 ["Auto use 404 Error for John Doe"] = "John Doe 自动使用 404 错误",
-["Forsaken"] = "汉化作者MR丨禁倒卖丨425695367",
-["SNT HUB"] = "SNT被遗弃 MR汉化",
 }
 
 local function translateText(text)
