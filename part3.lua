@@ -24,7 +24,7 @@ local Scripts = {
         end
     },
     {
-        Name = "墨水游戏",
+        Name = "墨水游戏(暂无法玩)",
         Color = Color3.fromRGB(80, 60, 120),
         LoadFunction = function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/墨水汉化.lua"))()
@@ -52,10 +52,24 @@ local Scripts = {
         end
     },
     {
-        Name = "99夜",
+        Name = "h4xs99夜",
         Color = Color3.fromRGB(60, 60, 50),
         LoadFunction = function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/99夜H4xs.lua"))()
+        end
+    },
+    {
+        Name = "SNT被遗弃",
+        Color = Color3.fromRGB(60, 30, 50),
+        LoadFunction = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/测试/SNT01.lua"))()
+        end
+    },
+    {
+        Name = "破坏者谜团2",
+        Color = Color3.fromRGB(30, 60, 50),
+        LoadFunction = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Xingtaiduan/Script/refs/heads/main/Games/破坏者谜团2.lua"))()
         end
     }
 }
@@ -64,10 +78,10 @@ local Scripts = {
 local InfoContents = {
     "🎯 MR脚本中心 正式版v1",
     "✨ v4更新公告：",
-    "• 更新服务器99夜",
+    "• 更新服务器SNT被遗弃,破坏者谜团2",
     "• 不定期更新",
-    "• 后续更新:被遗弃,bf,起床战争,跳跃对决",
-    "• 更新时间:2025/9/24",
+    "• 后续更新:bf,起床战争,跳跃对决,虚空被遗弃,虚空99夜,活到七天,造船寻宝,AX刀刃求,战争大亨,99夜DARK",
+    "• 更新时间:2025/9/28",
     "",
     "💎 重要信息：",
     "• MR脚本创始人:MR",
