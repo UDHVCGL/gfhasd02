@@ -249,7 +249,7 @@ local function showLoadingAnimation(onComplete)
     welcomeLabel.Size = UDim2.new(1, -50, 0, IsMobile() and 50 or 55)
     welcomeLabel.Position = UDim2.new(0, 25, 0, IsMobile() and 75 or 85)
     welcomeLabel.BackgroundTransparency = 1
-    welcomeLabel.Text = "欢迎使用 Xi Pro 脚本"
+    welcomeLabel.Text = "欢迎使用 MR-免费版 脚本"
     welcomeLabel.TextColor3 = Color3.fromRGB(140, 200, 255)
     welcomeLabel.TextSize = IsMobile() and 24 or 32
     welcomeLabel.Font = Enum.Font.GothamBold
@@ -383,7 +383,7 @@ local function showLoadingAnimation(onComplete)
         {text = "下载游戏数据...", progress = 75},
         {text = "解析配置文件...", progress = 85},
         {text = "准备游戏列表...", progress = 95},
-        {text = "神仇牛逼！", progress = 100}
+        {text = "MR牛逼！", progress = 100}
     }
     spawn(function()
         wait(0.6)
@@ -1260,10 +1260,10 @@ local function showGameList(screenGui, mainContainer, background, list_game)
             if not announcementContainer then
                 local updateConfig = {
                     updateItems = {
-                        {date = "2025-08-05", desc = "脚本发布！支持9款热门游戏，界面全新升级。"},
-                        {date = "2025-08-04", desc = "增加了新的UI界面和数字效果，提升用户体验。"},
-                        {date = "2025-08-03", desc = "修复了在'最强战场'中一个导致自动停止的bug。"},
-                        {date = "2025-08-01", desc = "内部测试版本v0.1启动，感谢早期测试人员。"}
+                        {date = "2025-09-27", desc = "脚本測試发布！界面全新升级。"},
+                        {date = "2025-09-27", desc = "增加了新的UI界面和数字效果，提升用户体验。"},
+                        {date = "2025-09-27", desc = "MR UI测试版"},
+                        {date = "2025-09-26", desc = "内部测试版本v1启动，感谢早期测试人员。"}
                     }
                 }
                 local announcementContainer = Instance.new("ScrollingFrame")
@@ -1386,13 +1386,13 @@ local function showGameList(screenGui, mainContainer, background, list_game)
                 developerText.Parent = contentFrame
 
                 local developers = {
-                    {name = "神仇", role = "主作者", desc = "项目负责人 · 核心架构", color = Color3.fromRGB(255, 100, 100)},
-                    {name = "鲨蛋", role = "副作者", desc = "功能开发 · 代码优化", color = Color3.fromRGB(100, 255, 100)},
-                    {name = "泡芙", role = "UI制作者", desc = "界面设计 · 用户体验", color = Color3.fromRGB(255, 200, 100)},
-                    {name = "Irena", role = "剪辑师", desc = "视频制作 · 宣传内容", color = Color3.fromRGB(255, 100, 255)},
-                    {name = "du8", role = "备用作者", desc = "代码维护 · 功能补充", color = Color3.fromRGB(100, 200, 255)},
-                    {name = "qumu", role = "白名单制作者", desc = "安全系统 · 权限管理", color = Color3.fromRGB(200, 255, 100)},
-                    {name = "小天", role = "黑客", desc = "技术研究 · 安全测试", color = Color3.fromRGB(255, 150, 200)}
+                    {name = "MR", role = "主作者", desc = "项目负责人 · 核心架构", color = Color3.fromRGB(255, 100, 100)},
+                    {name = "MR", role = "副作者", desc = "功能开发 · 代码优化", color = Color3.fromRGB(100, 255, 100)},
+                    {name = "MR", role = "UI制作者", desc = "界面设计 · 用户体验", color = Color3.fromRGB(255, 200, 100)},
+                    {name = "MR", role = "剪辑师", desc = "视频制作 · 宣传内容", color = Color3.fromRGB(255, 100, 255)},
+                    {name = "MR", role = "备用作者", desc = "代码维护 · 功能补充", color = Color3.fromRGB(100, 200, 255)},
+                    {name = "MR", role = "白名单制作者", desc = "安全系统 · 权限管理", color = Color3.fromRGB(200, 255, 100)},
+                    {name = "MR", role = "黑客", desc = "技术研究 · 安全测试", color = Color3.fromRGB(255, 150, 200)}
                 }
 
                 local cardHeight = IsMobile() and 90 or 120
@@ -1540,7 +1540,7 @@ local function showGameList(screenGui, mainContainer, background, list_game)
         mainContainer.Position = finalPosition
     end)
 
-    print(" Xi Pro 游戏列表已显示")
+    print("MR-免费版 游戏列表已显示")
     print(" 支持 " .. #list_game .. " 个游戏")
 end
 
@@ -1551,14 +1551,14 @@ function CreateSupportList(list_game)
 end
 
 local name = {
-    "最强战场",
-    "Blox Fruit",
-    "疯狂之城",
-    "忍者传奇",
-    "俄亥俄州",
+    "99夜",
+    "鲨鱼咬2",
+    "超速射击",
+    "墨水游戏",
+    "死铁轨",
     "刀刃球",
     "战争大亨",
-    "Fisch",
+    "被遗弃",
     "Doors",
 }
 
@@ -1613,5 +1613,6 @@ RunService.Heartbeat:Connect(function()
         end
     end
 end)
+
 
 CreateSupportList(name)
