@@ -584,7 +584,7 @@ local function showGameList(screenGui, mainContainer, background, list_game)
     titleLabel.Size = UDim2.new(1, -100, 1, 0)
     titleLabel.Position = UDim2.new(0, 20, 0, 0)
     titleLabel.BackgroundTransparency = 1
-    titleLabel.Text = "Xi Pro"
+    titleLabel.Text = "MR 免费版v2"
     titleLabel.TextColor3 = Color3.fromRGB(240, 245, 255)
     titleLabel.TextSize = IsMobile() and 16 or 20
     titleLabel.Font = Enum.Font.GothamBold
@@ -1616,4 +1616,5 @@ end)
 
 
 CreateSupportList(name)
+
 
