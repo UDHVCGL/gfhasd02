@@ -77,7 +77,7 @@ end
 
 local function cleanupAllGuis()
     for _, gui in pairs(playerGui:GetChildren()) do
-        if gui.Name == "XiProLoader" or gui.Name == "XiProGameList" then
+        if gui.Name == "MR中心v2Loader" or gui.Name == "MR中心v2GameList" then
             gui:Destroy()
         end
     end
@@ -130,7 +130,7 @@ local function showLoadingAnimation(onComplete)
     cleanupAllGuis()
 
     local screenGui = Instance.new("ScreenGui")
-    screenGui.Name = "XiProLoader"
+    screenGui.Name = "MR中心v2Loader"
     screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     screenGui.ResetOnSpawn = false
     screenGui.IgnoreGuiInset = true
@@ -536,7 +536,7 @@ end
 
 local function showGameList(screenGui, mainContainer, background, list_game)
 
-    screenGui.Name = "XiProGameList"
+    screenGui.Name = "MR中心v2GameList"
 
 
     spawn(function()
@@ -1616,3 +1616,4 @@ end)
 
 
 CreateSupportList(name)
+
