@@ -55,10 +55,10 @@ repeat wait() until Confirmed
 --
 
 local Window = WindUI:CreateWindow({
-    Title = "WindUI Library",
+    Title = "MR测试版v1",
     Icon = "rbxassetid://129260712070622",
     IconThemed = true,
-    Author = "Example UI",
+    Author = "作者MR｜Q425695367｜测试UI",
     Folder = "CloudHub",
     Size = UDim2.fromOffset(580, 460),
     Transparent = true,
@@ -108,7 +108,7 @@ Window:CreateTopbarButton("MyCustomButton3", "battery-plus", function() Window:T
 
 
 Window:EditOpenButton({
-    Title = "Open Example UI",
+    Title = "MR测试版v1 UI",
     Icon = "monitor",
     CornerRadius = UDim.new(0,16),
     StrokeThickness = 2,
