@@ -1,5 +1,3 @@
--- 在LocalScript中放置此代码，并确保它位于StarterGui中的ScreenGui下
-
 -- 创建界面
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "ArmyScriptGUI"
@@ -248,7 +246,7 @@ infoLabel.Size = UDim2.new(1, 0, 0, 35)
 infoLabel.Position = UDim2.new(0, 0, 1, 5)
 infoLabel.BackgroundTransparency = 1
 infoLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
-infoLabel.Text = "MR制作免费分享｜禁倒卖｜425695367｜组建军队脚本"
+infoLabel.Text = "MR制作免费分享｜倒卖全死｜作者Q425695367"
 infoLabel.Font = Enum.Font.Gotham
 infoLabel.TextSize = 10
 infoLabel.TextWrapped = true
