@@ -13,56 +13,56 @@ local Scripts = {
         Name = "鲨鱼咬2",
         Color = Color3.fromRGB(60, 120, 60),
         LoadFunction = function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/SharkBite2汉化.lua"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/AnonymMH/gfhasd02/refs/heads/Q425695367/SharkBite2汉化.lua"))()
         end
     },
     {
         Name = "超速射击",
         Color = Color3.fromRGB(120, 60, 60),
         LoadFunction = function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/Hypershot汉化.lua"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/AnonymMH/gfhasd02/refs/heads/Q425695367/Hypershot汉化.lua"))()
         end
     },
     {
         Name = "墨水游戏(暂无法玩)",
         Color = Color3.fromRGB(80, 60, 120),
         LoadFunction = function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/墨水汉化.lua"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/AnonymMH/gfhasd02/refs/heads/Q425695367/墨水汉化.lua"))()
         end
     },
     {
         Name = "DOORS",
         Color = Color3.fromRGB(60, 100, 150),
         LoadFunction = function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/DOORS.lua"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/AnonymMH/gfhasd02/refs/heads/Q425695367/DOORS.lua"))()
         end
     },
     {
         Name = "死铁轨",
         Color = Color3.fromRGB(60, 60, 150),
         LoadFunction = function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/死铁轨汉化.lua"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/AnonymMH/gfhasd02/refs/heads/Q425695367/死铁轨汉化.lua"))()
         end
     },
     {
         Name = "刀刃球",
         Color = Color3.fromRGB(60, 100, 50),
         LoadFunction = function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/MRE65855.lua"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/AnonymMH/gfhasd02/refs/heads/Q425695367/MRE65855.lua"))()
         end
     },
     {
         Name = "h4xs99夜",
         Color = Color3.fromRGB(60, 60, 50),
         LoadFunction = function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/Q425695367/99夜H4xs.lua"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/AnonymMH/gfhasd02/refs/heads/Q425695367/99夜H4xs.lua"))()
         end
     },
     {
         Name = "SNT被遗弃",
         Color = Color3.fromRGB(60, 30, 50),
         LoadFunction = function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/UDHVCGL/gfhasd02/refs/heads/测试/SNT01.lua"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/AnonymMH/gfhasd02/refs/heads/测试/SNT01.lua"))()
         end
     },
     {
@@ -80,10 +80,10 @@ local InfoContents = {
     "",
     "✨ v4更新公告：",
     "⚡️更新服务器SNT被遗弃,破坏者谜团2",
-    "💥不定期更新",
-    "💧后续更新:bf,起床战争,跳跃对决,虚空被遗弃,虚空99夜,活到七天",
-    "• 造船寻宝,AX刀刃求,战争大亨,99夜DARK",
-    "☀️更新时间:2025/9/28",
+    "💥已停止更新",
+    "💧最新版>https://my5353.com/MRSupreme01",
+    "👉请前往官网获得最新版",
+    "☀️最后更新时间:2025/9/28",
     "",
     "💎 重要信息：",
     "• 🌑MR脚本创始人:MR",
